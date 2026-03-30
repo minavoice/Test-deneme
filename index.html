@@ -3,114 +3,223 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>National Archaeological Museum - Dual App</title>
+    <title>National Archaeological Museum - Official Dual App</title>
     <style>
-        /* TEMEL SIFIRLAMA */
-        body, html { margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; height: 100%; overflow: hidden; }
+        @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@700&family=Roboto:wght@300;400;700&display=swap');
         
-        /* GİRİŞ EKRANI (DİL VE MOD SEÇİMİ) */
-        #mode-selector { height: 100vh; display: flex; flex-direction: column; background: #000; }
-        .mode-option { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; cursor: pointer; transition: 0.5s; text-align: center; border: 1px solid rgba(255,255,255,0.1); }
-        
-        /* 1. STİL: STRICT & MODERN (YETİŞKİN) */
-        .expert-btn { background: #ffffff; color: #1a1a1a; }
-        .expert-btn:hover { background: #f0f0f0; transform: scale(1.02); }
+        :root { --gold: #D4AF37; --dark: #0A0A0A; --kids-bg: #E3F2FD; --kids-accent: #1976D2; }
+        body, html { margin: 0; padding: 0; font-family: 'Roboto', sans-serif; height: 100%; background: #000; color: #fff; overflow-x: hidden; }
 
-        /* 2. STİL: ANIMATED & FUN (ÇOCUK) */
-        .kids-btn { background: #FFD54F; color: #5D4037; position: relative; overflow: hidden; }
-        .kids-btn:hover { background: #FFCA28; transform: scale(1.02); }
-        .kids-btn::after { content: '🏺'; position: absolute; font-size: 80px; opacity: 0.2; right: -20px; bottom: -20px; }
+        /* DİL SEÇİCİ */
+        .lang-bar { position: fixed; top: 15px; right: 15px; z-index: 1000; }
+        .l-btn { background: rgba(0,0,0,0.8); border: 1px solid var(--gold); color: var(--gold); padding: 6px 14px; cursor: pointer; font-family: 'Cinzel'; margin-left: 5px; border-radius: 4px; font-weight: bold; }
+        .l-btn.active { background: var(--gold); color: #000; }
 
-        /* --- PART 1: MUSEUM GUIDE VIEW --- */
-        #museum-guide { display: none; height: 100vh; background: #F4F4F4; }
-        .guide-header { background: #fff; padding: 20px; border-bottom: 2px solid #000; font-weight: bold; letter-spacing: 2px; text-transform: uppercase; }
-        .scanner-box { height: 35vh; background: #000; margin: 20px; position: relative; border-radius: 4px; overflow: hidden; }
-        .scan-bar { width: 100%; height: 2px; background: #00ff00; position: absolute; animation: scanMove 2.5s infinite linear; box-shadow: 0 0 15px #00ff00; }
-        @keyframes scanMove { 0% { top: 0; } 100% { top: 100%; } }
-        .info-panel { padding: 25px; background: #fff; margin: 0 20px; border-radius: 4px; border-top: 5px solid #000; }
+        /* GİRİŞ EKRANI */
+        #main-menu { height: 100vh; display: flex; flex-direction: column; }
+        .mode-card { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; cursor: pointer; transition: 0.6s; border: 1px solid rgba(255,255,255,0.05); }
+        .expert-card { background: #fff; color: #000; }
+        .kids-card { background: #FFCA28; color: #4527A0; }
+        .mode-card h1 { font-family: 'Cinzel', serif; margin: 10px 0; font-size: 2rem; }
 
-        /* --- PART 2: KIDS GAME VIEW --- */
-        #kids-game { display: none; height: 100vh; background: #E1F5FE; }
-        .game-header { background: #03A9F4; color: #fff; padding: 15px; text-align: center; font-size: 24px; font-weight: 900; border-bottom: 5px solid #0288D1; }
-        .quiz-card { background: #fff; margin: 20px; padding: 25px; border-radius: 30px; border: 4px solid #03A9F4; box-shadow: 0 10px 0 #B3E5FC; text-align: center; }
-        .collect-item { width: 80px; height: 80px; background: #fff; border-radius: 20px; display: inline-flex; align-items: center; justify-content: center; font-size: 40px; margin: 10px; border: 3px dashed #03A9F4; opacity: 0.3; transition: 0.5s; }
-        .collect-item.found { opacity: 1; border-style: solid; background: #FFF176; transform: rotate(10deg); }
-        
-        .action-btn { display: block; width: 100%; padding: 15px; margin-top: 15px; border-radius: 50px; border: none; font-weight: bold; cursor: pointer; font-size: 16px; }
-        .btn-expert { background: #000; color: #fff; }
-        .btn-kids { background: #FF7043; color: #fff; box-shadow: 0 5px 0 #D84315; }
+        /* REHBER MODU (STRICT & MODERN) */
+        #expert-view { display: none; min-height: 100vh; background: #F5F5F5; color: #212121; padding-bottom: 80px; }
+        .header-bar { background: #fff; padding: 25px; border-bottom: 3px solid #000; font-family: 'Cinzel'; font-size: 1.3rem; text-align: center; letter-spacing: 2px; }
+        .artifact-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; padding: 20px; }
+        .artifact-card { background: #fff; border-radius: 5px; overflow: hidden; box-shadow: 0 4px 12px rgba(0,0,0,0.1); cursor: pointer; transition: 0.3s; }
+        .artifact-card:hover { transform: translateY(-5px); box-shadow: 0 8px 25px rgba(0,0,0,0.2); }
+        .artifact-card img { width: 100%; height: 150px; object-fit: cover; border-bottom: 3px solid var(--gold); }
+        .artifact-card p { padding: 12px; margin: 0; font-weight: bold; font-size: 0.9rem; text-align: center; text-transform: uppercase; }
 
-        .back-nav { position: fixed; bottom: 20px; width: 100%; text-align: center; }
-        .exit-btn { background: rgba(0,0,0,0.6); color: #fff; padding: 8px 20px; border-radius: 20px; border: none; cursor: pointer; font-size: 12px; }
+        /* SCANNER OVERLAY */
+        #scanner { display: none; position: fixed; top:0; left:0; width:100%; height:100%; background: rgba(0,0,0,0.97); z-index: 2000; flex-direction: column; align-items: center; justify-content: center; padding: 20px; box-sizing: border-box; }
+        .scan-frame { width: 280px; height: 280px; border: 2px solid var(--gold); position: relative; overflow: hidden; margin-bottom: 25px; box-shadow: 0 0 30px rgba(212, 175, 55, 0.3); }
+        .scan-line { width: 100%; height: 3px; background: #00FF00; position: absolute; animation: scanAnim 2s infinite linear; box-shadow: 0 0 20px #00FF00; }
+        @keyframes scanAnim { 0% { top: 0; } 100% { top: 100%; } }
+        .result-box { background: #fff; color: #000; padding: 30px; border-radius: 8px; width: 100%; max-width: 450px; text-align: center; border-top: 8px solid var(--gold); }
+
+        /* OYUN MODU (KIDS FUN & EDUCATIONAL) */
+        #kids-view { display: none; min-height: 100vh; background: var(--kids-bg); color: #1565C0; text-align: center; }
+        .kids-header { background: #1E88E5; color: #fff; padding: 25px; font-size: 1.6rem; font-weight: 900; box-shadow: 0 5px 20px rgba(0,0,0,0.1); border-bottom: 6px solid #0D47A1; }
+        .quiz-card { background: #fff; margin: 25px; padding: 30px; border-radius: 35px; border: 8px solid #1E88E5; box-shadow: 0 10px 0 #BBDEFB; }
+        .opt-btn { display: block; width: 100%; padding: 18px; margin: 12px 0; border-radius: 60px; border: 3px solid #1E88E5; background: #fff; font-weight: 900; cursor: pointer; color: #1E88E5; font-size: 1.1rem; transition: 0.2s; }
+        .opt-btn:hover { background: #E3F2FD; transform: scale(1.02); }
+        .shelf { display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; padding: 25px; }
+        .slot { width: 60px; height: 60px; background: #fff; border-radius: 15px; display: flex; align-items: center; justify-content: center; font-size: 32px; opacity: 0.2; border: 3px dashed #90CAF9; transition: 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+        .slot.found { opacity: 1; border-style: solid; background: #FFF176; border-color: #FBC02D; transform: scale(1.2) rotate(5deg); }
+
+        .btn-home { position: fixed; bottom: 25px; left: 50%; transform: translateX(-50%); background: #000; color: #fff; padding: 15px 40px; border-radius: 40px; border: 2px solid var(--gold); cursor: pointer; font-family: 'Cinzel'; font-weight: bold; z-index: 500; }
     </style>
 </head>
 <body>
 
-    <div id="mode-selector">
-        <div class="mode-option expert-btn" onclick="openMode('guide')">
-            <h1 style="font-size: 14px; letter-spacing: 4px;">NATIONAL MUSEUM</h1>
-            <h2 style="margin: 5px 0; font-weight: 900;">PROFESSIONAL GUIDE</h2>
-            <p style="font-size: 12px; opacity: 0.6;">SCAN & RESEARCH FINDINGS</p>
+    <div class="lang-bar">
+        <button class="l-btn active" id="en-toggle" onclick="setLang('en')">EN</button>
+        <button class="l-btn" id="el-toggle" onclick="setLang('el')">EL</button>
+    </div>
+
+    <div id="main-menu">
+        <div class="mode-card expert-card" onclick="openMode('expert')">
+            <h1 data-key="m-expert-h">EXHIBITION GUIDE</h1>
+            <p data-key="m-expert-p">Scan Artifacts & Detailed History</p>
         </div>
-        <div class="mode-option kids-btn" onclick="openMode('game')">
-            <h1 style="font-size: 28px; margin: 0;">I'M THE ARCHAEOLOGIST!</h1>
-            <p style="font-weight: bold;">PLAY & COLLECT TREASURES 🌟</p>
+        <div class="mode-card kids-card" onclick="openMode('kids')">
+            <h1 data-key="m-kids-h">I'M THE ARCHAEOLOGIST!</h1>
+            <p data-key="m-kids-p">10 Missions & Collection Game 🏺</p>
         </div>
     </div>
 
-    <div id="museum-guide">
-        <div class="guide-header">EXHIBIT SCANNER v1.0</div>
-        <div class="scanner-box">
-            <div class="scan-bar"></div>
-            <div style="color: #444; position: absolute; top: 45%; width: 100%; text-align: center; font-size: 12px;">ALIGN ARTIFACT WITHIN FRAME</div>
-        </div>
-        <div class="info-panel">
-            <h3 style="margin-top: 0; text-transform: uppercase;">The Zeus of Artemision</h3>
-            <p style="font-size: 14px; color: #555; line-height: 1.6;">A great bronze statue recovered from the sea off Cape Artemision. It represents either Zeus or Poseidon, dated circa 460 BC.</p>
-            <button class="action-btn btn-expert">🔊 HEAR AUDIO DESCRIPTION</button>
-            <button class="action-btn btn-expert" style="background: none; border: 1px solid #000; color: #000; margin-top: 10px;">📄 READ FULL ANALYSIS</button>
-        </div>
-    </div>
-
-    <div id="kids-game">
-        <div class="game-header">MY ADVENTURE 🎒</div>
-        <div class="quiz-card">
-            <h3 style="margin-top: 0; color: #03A9F4;">MISSION 1: THE LOST MASK</h3>
-            <p>We found a golden mask! Do you know who it belonged to?</p>
-            <button class="action-btn btn-kids" onclick="winItem(0)">A) King Agamemnon</button>
-            <button class="action-btn btn-kids" style="background: #4FC3F7; box-shadow: 0 5px 0 #039BE5;">B) Hercules</button>
-        </div>
+    <div id="expert-view">
+        <div class="header-bar" data-key="exp-title">ARTIFACT EXPLORER</div>
+        <div class="artifact-grid" id="grid"></div>
         
-        <div style="text-align: center; margin-top: 30px;">
-            <p style="font-weight: bold; color: #0288D1;">MY MUSEUM COLLECTION</p>
-            <div id="collection-grid">
-                <div class="collect-item">🎭</div>
-                <div class="collect-item">🏺</div>
-                <div class="collect-item">⚔️</div>
-            </div>
+        <div id="scanner">
+            <div class="scan-frame"><div class="scan-line"></div></div>
+            <div class="result-box" id="res-content"></div>
+            <button onclick="closeScanner()" style="margin-top:25px; padding:12px 50px; cursor:pointer; font-weight:bold; border-radius:5px; border:1px solid #ddd;" data-key="close">CLOSE</button>
         </div>
     </div>
 
-    <div class="back-nav">
-        <button class="exit-btn" id="exit-btn" style="display:none;" onclick="location.reload()">Return to Menu</button>
+    <div id="kids-view">
+        <div class="kids-header"><span data-key="lvl">MISSION</span>: <span id="lvl-txt">1</span> / 10</div>
+        <div class="quiz-card">
+            <h3 id="q-txt">Question Loading...</h3>
+            <div id="q-opts"></div>
+        </div>
+        <p style="font-weight: 900; letter-spacing: 2px; text-transform: uppercase;" data-key="shelf-title">MY TREASURE SHELF</p>
+        <div class="shelf" id="shelf-grid"></div>
     </div>
+
+    <button class="btn-home" id="home-btn" style="display:none;" onclick="location.reload()" data-key="home">MAIN MENU</button>
 
     <script>
-        function openMode(mode) {
-            document.getElementById('mode-selector').style.display = 'none';
-            document.getElementById('exit-btn').style.display = 'inline-block';
-            if(mode === 'guide') {
-                document.getElementById('museum-guide').style.display = 'block';
-            } else {
-                document.getElementById('kids-game').style.display = 'block';
+        const i18n = {
+            en: {
+                "m-expert-h": "EXHIBITION GUIDE", "m-expert-p": "Scan Artifacts & Detailed History",
+                "m-kids-h": "I'M THE ARCHAEOLOGIST!", "m-kids-p": "10 Missions & Collection Game 🏺",
+                "exp-title": "NATIONAL MUSEUM GUIDE", "close": "CLOSE", "home": "BACK TO MENU",
+                "lvl": "MISSION", "shelf-title": "MY TREASURE SHELF", "scan-msg": "IDENTIFYING ARTIFACT...",
+                "listen": "🔊 LISTEN AUDIO GUIDE", "correct": "🌟 EXCELLENT! You solved the mystery! Item added to your collection.", 
+                "wrong": "❌ Oh no! That's not quite right. Check the artifact again!",
+                "win": "🏆 CONGRATULATIONS MASTER ARCHAEOLOGIST!\n\nYou have completed all missions and built a magnificent collection!"
+            },
+            el: {
+                "m-expert-h": "ΟΔΗΓΟΣ ΕΚΘΕΣΗΣ", "m-expert-p": "Σάρωση & Λεπτομερής Ιστορία",
+                "m-kids-h": "ΕΙΜΑΙ ΑΡΧΑΙΟΛΟΓΟΣ!", "m-kids-p": "10 Αποστολές & Παιχνίδι Συλλογής 🏺",
+                "exp-title": "ΕΞΕΡΕΥΝΗΤΗΣ ΕΚΘΕΜΑΤΩΝ", "close": "ΚΛΕΙΣΙΜΟ", "home": "ΑΡΧΙΚΟ ΜΕΝΟΥ",
+                "lvl": "ΑΠΟΣΤΟΛΗ", "shelf-title": "Η ΣΥΛΛΟΓΗ ΜΟΥ", "scan-msg": "ΑΝΑΓΝΩΡΙΣΗ ΕΚΘΕΜΑΤΟΣ...",
+                "listen": "🔊 ΑΚΟΥΣΤΕ ΤΟ ΗΧΗΤΙΚΟ", "correct": "🌟 ΕΞΑΙΡΕΤΙΚΑ! Έλυσες το μυστήριο! Το αντικείμενο προστέθηκε στη συλλογή σου.", 
+                "wrong": "❌ Ωχ όχι! Αυτό δεν είναι σωστό. Ελέγξτε ξανά το έκθεμα!",
+                "win": "🏆 ΣΥΓΧΑΡΗΤΗΡΙΑ ΑΡΧΙ-ΑΡΧΑΙΟΛΟΓΕ!\n\nΟλοκληρώσατε όλες τις αποστολές και δημιουργήσατε μια υπέροχη συλλογή!"
             }
+        };
+
+        const artifacts = [
+            { id: 1, en: "Antikythera Mechanism", el: "Μηχανισμός Αντικυθήρων", img: "https://upload.wikimedia.org/wikipedia/commons/thumb/6/66/Antikythera_mechanism_original.JPG/300px-Antikythera_mechanism_original.JPG", desc_en: "The world's oldest analog computer used for celestial predictions.", desc_el: "Ο αρχαιότερος αναλογικός υπολογιστής του κόσμου για ουράνιες προβλέψεις." },
+            { id: 2, en: "Mask of Agamemnon", el: "Μάσκα του Αγαμέμνονα", img: "https://upload.wikimedia.org/wikipedia/commons/thumb/c/c2/MaskOfAgamemnon.jpg/300px-MaskOfAgamemnon.jpg", desc_en: "A funeral gold mask discovered in Mycenae, dated 1550 BC.", desc_el: "Χρυσή νεκρική μάσκα που ανακαλύφθηκε στις Μυκήνες, το 1550 π.Χ." },
+            { id: 3, en: "Zeus of Artemision", el: "Δίας του Αρτεμισίου", img: "https://upload.wikimedia.org/wikipedia/commons/thumb/4/4e/Artemision_Bronze_NAMA_15161_cropped.jpg/300px-Artemision_Bronze_NAMA_15161_cropped.jpg", desc_en: "Bronze statue of a god, either Zeus or Poseidon, found in the sea.", desc_el: "Χάλκινο άγαλμα θεού, είτε του Δία είτε του Ποσειδώνα, βρέθηκε στη θάλασσα." },
+            { id: 4, en: "Jockey of Artemision", el: "Ο αναβάτης του Αρτεμισίου", img: "https://upload.wikimedia.org/wikipedia/commons/thumb/0/01/Jockey_Artemision_NAMA_15177.jpg/300px-Jockey_Artemision_NAMA_15177.jpg", desc_en: "A dynamic life-size bronze statue of a young boy riding a horse.", desc_el: "Ένα δυναμικό χάλκινο άγαλμα σε φυσικό μέγεθος ενός αγοριού που ιππεύει άλογο." },
+            { id: 5, en: "Diadumenos", el: "Διαδούμενος", img: "https://upload.wikimedia.org/wikipedia/commons/thumb/d/d4/Diadumenos_NAMA_1826.jpg/300px-Diadumenos_NAMA_1826.jpg", desc_en: "Statue of an athlete tying a fillet around his head.", desc_el: "Άγαλμα αθλητή που δένει μια ταινία γύρω από το κεφάλι του." },
+            { id: 6, en: "Sphinx of Naxos", el: "Σφίγγα των Ναξίων", img: "https://upload.wikimedia.org/wikipedia/commons/thumb/6/60/Sphinx_of_Naxos_Delphi_Museum.jpg/300px-Sphinx_of_Naxos_Delphi_Museum.jpg", desc_en: "A monumental marble sphinx that stood on a tall column at Delphi.", desc_el: "Μια μνημειώδης μαρμάρινη σφίγγα που στεκόταν σε ψηλή κολώνα στους Δελφούς." },
+            { id: 7, en: "The Marathon Boy", el: "Ο έφηβος του Μαραθώνα", img: "https://upload.wikimedia.org/wikipedia/commons/thumb/b/b8/Marathon_Boy_NAMA_15118.jpg/300px-Marathon_Boy_NAMA_15118.jpg", desc_en: "A Greek bronze sculpture found in the Marathon Bay in 1925.", desc_el: "Ένα ελληνικό χάλκινο γλυπτό που βρέθηκε στον κόλπο του Μαραθώνα το 1925." },
+            { id: 8, en: "The Boxer at Rest", el: "Ο Πυγμάχος σε Ανάπαυση", img: "https://upload.wikimedia.org/wikipedia/commons/thumb/f/f6/Boxer_at_Rest_Palazzo_Massimo.jpg/300px-Boxer_at_Rest_Palazzo_Massimo.jpg", desc_en: "A realistic bronze sculpture showing the wounds of a boxer.", desc_el: "Ένα ρεαλιστικό χάλκινο γλυπτό που δείχνει τις πληγές ενός πυγμάχου." },
+            { id: 9, en: "Vaphio Cup", el: "Κύπελλο του Βαφειού", img: "https://upload.wikimedia.org/wikipedia/commons/thumb/4/4e/Vaphio_cups_NAMA_1758_1759.jpg/300px-Vaphio_cups_NAMA_1758_1759.jpg", desc_en: "Golden cups showing scenes of bull capture from Laconia.", desc_el: "Χρυσά κύπελλα που δείχνουν σκηνές σύλληψης ταύρων από τη Λακωνία." },
+            { id: 10, en: "Bronze Poseidon", el: "Χάλκινος Ποσειδώνας", img: "https://upload.wikimedia.org/wikipedia/commons/thumb/a/ae/NAMA_Bronze_Poseidon.jpg/300px-NAMA_Bronze_Poseidon.jpg", desc_en: "Magnificent bronze statue representing the ruler of the sea.", desc_el: "Μεγαλοπρεπές χάλκινο άγαλμα που αναπαριστά τον κυρίαρχο της θάλασσας." }
+        ];
+
+        const questions = [
+            { en: "What is the Antikythera Mechanism?", el: "Τι είναι ο Μηχανισμός των Αντικυθήρων;", opts_en: ["Computer", "Sword", "Shield"], opts_el: ["Υπολογιστής", "Σπαθί", "Ασπίδα"], c: 0, s: "⚙️" },
+            { en: "Who discovered the Mask of Agamemnon?", el: "Ποιος ανακάλυψε τη Μάσκα του Αγαμέμνονα;", opts_en: ["Heinrich Schliemann", "Zeus", "Hercules"], opts_el: ["Ερρίκος Σλήμαν", "Δίας", "Ηρακλής"], c: 0, s: "🎭" },
+            { en: "Poseidon is the god of which place?", el: "Ο Ποσειδώνας είναι ο θεός ποιου μέρους;", opts_en: ["The Sun", "The Sea", "The Forest"], opts_el: ["Ήλιος", "Θάλασσα", "Δάσος"], c: 1, s: "🔱" },
+            { en: "A Sphinx is half lion and half...", el: "Μια Σφίγγα είναι μισή λιοντάρι και μισή...", opts_en: ["Eagle", "Woman", "Cat"], opts_el: ["Αετός", "Γυναίκα", "Γάτα"], c: 1, s: "🦁" },
+            { en: "Most ancient statues were cast in...", el: "Τα περισσότερα αρχαία αγάλματα ήταν από...", opts_en: ["Bronze", "Plastic", "Glass"], opts_el: ["Ορείχαλκο", "Πλαστικό", "Γυαλί"], c: 0, s: "🏺" },
+            { en: "What is a Jockey?", el: "Τι είναι ο Αναβάτης;", opts_en: ["A Horse Rider", "A Cook", "A Dancer"], opts_el: ["Ιππέας", "Μάγειρας", "Χορευτής"], c: 0, s: "🏇" },
+            { en: "The Mycenaean culture was famous for its...", el: "Ο Μυκηναϊκός πολιτισμός ήταν διάσημος για το...", opts_en: ["Gold", "Paper", "Cotton"], opts_el: ["Χρυσό", "Χαρτί", "Βαμβάκι"], c: 0, s: "👑" },
+            { en: "Olympic athletes were crowned with...", el: "Οι Ολυμπιονίκες στεφανώνονταν με...", opts_en: ["Olive Wreath", "Silver Crown", "Gold Medal"], opts_el: ["Κότινο (Ελιά)", "Ασημένιο Στέμμα", "Χρυσό Μετάλλιο"], c: 0, s: "🌿" },
+            { en: "The Boxer at Rest is made of which material?", el: "Από τι υλικό είναι ο Πυγμάχος;", opts_en: ["Wood", "Bronze", "Stone"], opts_el: ["Ξύλο", "Ορείχαλκο", "Πέτρα"], c: 1, s: "🥊" },
+            { en: "Where was the Marathon Boy found?", el: "Πού βρέθηκε ο Έφηβος του Μαραθώνα;", opts_en: ["In the Sea", "In a Volcano", "In a Cave"], opts_el: ["Στη Θάλασσα", "Σε Ηφαίστειο", "Σε Σπηλιά"], c: 0, s: "🌊" }
+        ];
+
+        let lang = 'en';
+        let level = 0;
+
+        function setLang(l) {
+            lang = l;
+            document.querySelectorAll('.l-btn').forEach(b => b.classList.remove('active'));
+            document.getElementById(l + '-toggle').classList.add('active');
+            Object.keys(i18n[l]).forEach(key => {
+                const el = document.querySelector(`[data-key="${key}"]`);
+                if(el) el.innerText = i18n[l][key];
+            });
+            if(document.getElementById('expert-view').style.display === 'block') loadGrid();
+            if(document.getElementById('kids-view').style.display === 'block') loadGame();
         }
 
-        function winItem(index) {
-            const items = document.querySelectorAll('.collect-item');
-            items[index].classList.add('found');
-            alert("🌟 AMAZING! You found a treasure for your collection! 🌟");
+        function openMode(m) {
+            document.getElementById('main-menu').style.display = 'none';
+            document.getElementById('home-btn').style.display = 'block';
+            document.getElementById(m + '-view').style.display = 'block';
+            if(m === 'expert') loadGrid();
+            if(m === 'kids') loadGame();
         }
+
+        function loadGrid() {
+            const g = document.getElementById('grid');
+            g.innerHTML = artifacts.map(a => `
+                <div class="artifact-card" onclick="scanItem(${a.id})">
+                    <img src="${a.img}">
+                    <p>${lang === 'en' ? a.en : a.el}</p>
+                </div>
+            `).join('');
+        }
+
+        function scanItem(id) {
+            const a = artifacts.find(x => x.id === id);
+            const s = document.getElementById('scanner');
+            s.style.display = 'flex';
+            document.getElementById('res-content').innerHTML = `<h3>${i18n[lang]['scan-msg']}</h3>`;
+            setTimeout(() => {
+                document.getElementById('res-content').innerHTML = `
+                    <h2 style="color:var(--gold); font-family: 'Cinzel';">${lang === 'en' ? a.en : a.el}</h2>
+                    <p style="line-height:1.6;">${lang === 'en' ? a.desc_en : a.desc_el}</p>
+                    <button style="width:100%; padding:14px; background:#000; color:#fff; border:none; font-weight:bold; cursor:pointer;">${i18n[lang].listen}</button>
+                `;
+            }, 1800);
+        }
+
+        function closeScanner() { document.getElementById('scanner').style.display = 'none'; }
+
+        function loadGame() {
+            if(level >= 10) { 
+                alert(i18n[lang].win); 
+                location.reload(); 
+                return; 
+            }
+            const q = questions[level];
+            document.getElementById('lvl-txt').innerText = level + 1;
+            document.getElementById('q-txt').innerText = lang === 'en' ? q.en : q.el;
+            document.getElementById('q-opts').innerHTML = (lang === 'en' ? q.opts_en : q.opts_el).map((o, i) => `
+                <button class="opt-btn" onclick="answer(${i})">${o}</button>
+            `).join('');
+            updateShelf();
+        }
+
+        function answer(i) {
+            if(i === questions[level].c) { 
+                alert(i18n[lang].correct); 
+                level++; 
+                loadGame(); 
+            }
+            else alert(i18n[lang].wrong);
+        }
+
+        function updateShelf() {
+            document.getElementById('shelf-grid').innerHTML = questions.map((q, i) => `
+                <div class="slot ${i < level ? 'found' : ''}">${q.s}</div>
+            `).join('');
+        }
+
+        setLang('en'); // Başlangıç dili
     </script>
 </body>
 </html>

@@ -3,159 +3,218 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NAM Athens - Dual Mode</title>
+    <title>National Archaeological Museum - Final Edition</title>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@700&family=Roboto:wght@300;400;900&family=Fredoka:wght@400;700&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@700&family=Roboto:wght@300;400;900&display=swap');
         
-        :root { --gold: #D4AF37; --kids-blue: #4CC9F0; --kids-pink: #F72585; }
-        body, html { margin: 0; padding: 0; height: 100%; background: #000; font-family: 'Roboto', sans-serif; overflow-x: hidden; }
+        :root { --gold: #D4AF37; --dark: #0A0A0A; --kids-blue: #1E88E5; }
+        body, html { margin: 0; padding: 0; font-family: 'Roboto', sans-serif; height: 100%; background: #000; color: #fff; overflow-x: hidden; }
 
-        /* SPLASH SCREEN (MOD SEÇİMİ) */
-        #splash { position: fixed; inset: 0; z-index: 5000; background: #000; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; }
-        #splash h1 { color: #fff; font-family: 'Cinzel'; margin-bottom: 40px; padding: 0 20px; }
-        .mode-btn { width: 280px; padding: 25px; margin: 15px; border-radius: 15px; border: none; cursor: pointer; font-size: 1.2rem; font-weight: bold; transition: 0.3s; }
-        .adult-select { background: #fff; color: #000; font-family: 'Cinzel'; border-bottom: 5px solid var(--gold); }
-        .kids-select { background: var(--kids-blue); color: #fff; font-family: 'Fredoka'; border-bottom: 5px solid #3a0ca3; }
+        /* LANGUAGE SELECTOR */
+        .lang-bar { position: fixed; top: 15px; right: 15px; z-index: 1000; }
+        .l-btn { background: rgba(0,0,0,0.8); border: 1px solid var(--gold); color: var(--gold); padding: 8px 16px; cursor: pointer; font-family: 'Cinzel'; margin-left: 5px; border-radius: 5px; font-weight: bold; }
+        .l-btn.active { background: var(--gold); color: #000; }
 
-        /* ADULT STYLE (PROJE 1) */
-        .mode-adult { background: #0a0a0a; color: #fff; }
-        .mode-adult header { background: #fff; color: #000; font-family: 'Cinzel'; padding: 20px; text-align: center; border-bottom: 5px solid var(--gold); }
-        .mode-adult .card { background: #fff; color: #000; border-bottom: 4px solid var(--gold); border-radius: 2px; }
+        /* MAIN MENU */
+        #main-menu { height: 100vh; display: flex; flex-direction: column; }
+        .mode-card { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; cursor: pointer; transition: 0.5s; text-align: center; }
+        .expert-card { background: #fff; color: #000; border-bottom: 2px solid var(--gold); }
+        .kids-card { background: #FFD54F; color: #4527A0; }
+        .mode-card h1 { font-family: 'Cinzel', serif; font-size: 2.2rem; margin: 10px 0; }
 
-        /* KIDS STYLE (PROJE 2) */
-        .mode-kids { background: #f0f9ff; color: #333; }
-        .mode-kids header { background: var(--kids-pink); color: #fff; font-family: 'Fredoka'; padding: 20px; text-align: center; border-radius: 0 0 30px 30px; box-shadow: 0 5px 15px rgba(0,0,0,0.1); }
-        .mode-kids .card { background: #fff; color: #333; border: 4px solid var(--kids-blue); border-radius: 25px; overflow: hidden; }
-        .mode-kids .card p { font-family: 'Fredoka'; color: var(--kids-pink); font-size: 1rem; }
+        /* EXPERT VIEW & SCANNER */
+        #expert-view { display: none; min-height: 100vh; background: #F5F5F5; color: #212121; }
+        .artifact-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; padding: 20px; padding-bottom: 80px; }
+        .artifact-card { background: #fff; border-radius: 8px; overflow: hidden; box-shadow: 0 4px 15px rgba(0,0,0,0.1); cursor: pointer; border-bottom: 4px solid var(--gold); }
+        .artifact-card img { width: 100%; height: 150px; object-fit: cover; background: #eee; }
+        .artifact-card p { padding: 12px; font-weight: 900; text-align: center; font-size: 0.75rem; color: #000; margin:0; }
 
-        /* COMMON UI */
-        .grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; padding: 20px; padding-bottom: 100px; }
-        .card { cursor: pointer; transition: 0.3s; box-shadow: 0 4px 10px rgba(0,0,0,0.2); }
-        .img-box { width: 100%; height: 150px; background: #eee; overflow: hidden; }
-        .img-box img { width: 100%; height: 100%; object-fit: cover; }
-        .card p { padding: 10px; text-align: center; margin: 0; font-weight: bold; font-size: 0.8rem; }
+        #scanner { display: none; position: fixed; top:0; left:0; width:100%; height:100%; background: rgba(0,0,0,0.98); z-index: 2000; flex-direction: column; align-items: center; justify-content: center; padding: 20px; }
+        .scan-frame { width: 280px; height: 280px; border: 3px solid var(--gold); position: relative; overflow: hidden; background: #000; }
+        #scan-img-target { width: 100%; height: 100%; object-fit: contain; }
+        .scan-line { width: 100%; height: 4px; background: #00FF00; position: absolute; animation: scanAnim 2s infinite linear; box-shadow: 0 0 15px #00FF00; }
+        @keyframes scanAnim { 0% { top: 0; } 100% { top: 100%; } }
+        .res-box { background: #fff; color: #000; padding: 20px; border-radius: 10px; width: 100%; max-width: 450px; margin-top: 20px; text-align: center; }
 
-        /* LANG BAR */
-        .lang-bar { position: fixed; top: 10px; right: 10px; z-index: 3000; }
-        .l-btn { background: rgba(0,0,0,0.7); color: #fff; border: 1px solid #fff; padding: 5px 10px; border-radius: 5px; cursor: pointer; }
+        /* KIDS GAME VIEW */
+        #kids-view { display: none; min-height: 100vh; background: #E3F2FD; color: #1565C0; text-align: center; }
+        .kids-header { background: var(--kids-blue); color: #fff; padding: 20px; font-size: 1.5rem; font-weight: 900; border-bottom: 6px solid #0D47A1; }
+        .quiz-card { background: #fff; margin: 20px; padding: 30px; border-radius: 35px; border: 8px solid var(--kids-blue); }
+        .opt-btn { display: block; width: 100%; padding: 16px; margin: 10px 0; border-radius: 50px; border: 3px solid var(--kids-blue); background: #fff; font-weight: 900; cursor: pointer; color: var(--kids-blue); font-size: 1rem; }
+        .shelf { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; padding: 15px; }
+        .slot { width: 45px; height: 45px; background: #fff; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 22px; opacity: 0.2; border: 2px dashed #90CAF9; }
+        .slot.found { opacity: 1; border-style: solid; background: #FFF176; transform: scale(1.1); }
 
-        /* SCANNER PANEL */
-        #scanner { display: none; position: fixed; inset: 0; z-index: 4000; background: rgba(0,0,0,0.95); flex-direction: column; align-items: center; overflow-y: auto; padding: 20px; }
-        .scan-content { background: #fff; color: #000; width: 100%; max-width: 450px; border-radius: 20px; overflow: hidden; text-align: center; }
-        #scan-img { width: 100%; max-height: 300px; object-fit: cover; }
-        .info-p { padding: 20px; }
-        .close-btn { background: #000; color: #fff; padding: 15px; width: 100%; border: none; font-weight: bold; cursor: pointer; }
-        
-        .back-home { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); padding: 15px 30px; border-radius: 50px; border: none; background: #000; color: #fff; font-weight: bold; cursor: pointer; z-index: 1000; border: 2px solid var(--gold); }
+        .btn-home { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); background: #000; color: #fff; padding: 12px 35px; border-radius: 30px; border: 2px solid var(--gold); cursor: pointer; font-family: 'Cinzel'; z-index: 500; }
     </style>
 </head>
 <body>
 
-    <div id="splash">
-        <h1>NATIONAL ARCHAEOLOGICAL MUSEUM</h1>
-        <button class="mode-btn adult-select" onclick="startApp('adult')">PROJECT 1<br>Professional Archive</button>
-        <button class="mode-btn kids-select" onclick="startApp('kids')">PROJECT 2<br>I'm an Archaeologist!</button>
+    <div class="lang-bar">
+        <button class="l-btn active" onclick="setLang('en')">EN</button>
+        <button class="l-btn" onclick="setLang('el')">EL</button>
     </div>
 
-    <div id="app-body" style="display:none">
-        <div class="lang-bar">
-            <button class="l-btn" onclick="toggleLang()">EN/EL</button>
+    <div id="main-menu">
+        <div class="mode-card expert-card" onclick="openMode('expert')">
+            <h1 data-key="m-expert-h">EXHIBITION GUIDE</h1>
+            <p data-key="m-expert-p">Scan & Discover Ancient Secrets</p>
         </div>
-        <header id="h-title"></header>
-        <div class="grid" id="main-grid"></div>
-        <button class="back-home" onclick="location.reload()">BACK TO MODES</button>
+        <div class="mode-card kids-card" onclick="openMode('kids')">
+            <h1 data-key="m-kids-h">I'M THE ARCHAEOLOGIST!</h1>
+            <p data-key="m-kids-p">15 Missions of Ancient Greece 🏺</p>
+        </div>
+    </div>
+
+    <div id="expert-view">
+        <div style="padding:20px; font-family:'Cinzel'; text-align:center; font-size:1.2rem; background:#fff; border-bottom:3px solid #000; color:#000;" data-key="exp-title">ARTIFACT EXPLORER</div>
+        <div class="artifact-grid" id="grid"></div>
     </div>
 
     <div id="scanner">
-        <div class="scan-content">
-            <img id="scan-img" src="">
-            <div class="info-p">
-                <h2 id="info-name"></h2>
-                <p id="info-desc"></p>
-                <button class="close-btn" onclick="closeScanner()">CLOSE</button>
-            </div>
+        <div class="scan-frame">
+            <img id="scan-img-target" src="">
+            <div class="scan-line"></div>
         </div>
+        <div class="res-box" id="res-content"></div>
+        <button onclick="closeScanner()" style="margin-top:20px; padding:12px 40px; cursor:pointer; font-weight:bold; background:var(--gold); border:none; border-radius:5px;" data-key="close">CLOSE</button>
     </div>
 
-    <script>
-        let currentMode = 'adult';
-        let currentLang = 'en';
+    <div id="kids-view">
+        <div class="kids-header"><span data-key="lvl">MISSION</span>: <span id="lvl-txt">1</span> / 15</div>
+        <div class="quiz-card">
+            <h3 id="q-txt">Question?</h3>
+            <div id="q-opts"></div>
+        </div>
+        <div class="shelf" id="shelf-grid"></div>
+    </div>
 
-        const data = [
-            {
-                id: 1, en: "Antikythera Mechanism", el: "Μηχανισμός Αντικυθήρων",
-                img: "https://upload.wikimedia.org/wikipedia/commons/thumb/6/66/NAMA_Machine_d%27Anticyth%C3%A8re_1.jpg/500px-NAMA_Machine_d%27Anticyth%C3%A8re_1.jpg",
-                desc_en: "World's first analog computer (150 BC).",
-                kids_en: "A space-robot machine from 2000 years ago! It tracked the moon and stars.",
-                desc_el: "Ο πρώτος αναλογικός υπολογιστής στον κόσμο.",
-                kids_el: "Μια μηχανή-ρομπότ από το παρελθόν! Παρακολουθούσε τα αστέρια."
+    <button class="btn-home" id="home-btn" style="display:none;" onclick="location.reload()" data-key="home">MAIN MENU</button>
+
+    <script>
+        const i18n = {
+            en: {
+                "m-expert-h": "EXHIBITION GUIDE", "m-expert-p": "Scan & Discover Ancient Secrets",
+                "m-kids-h": "I'M THE ARCHAEOLOGIST!", "m-kids-p": "15 Missions of Ancient Greece 🏺",
+                "exp-title": "NATIONAL MUSEUM GUIDE", "close": "RETURN", "home": "BACK TO MENU",
+                "lvl": "MISSION", "scanning": "ANALYZING ARTIFACT...",
+                "correct": "🌟 BRAVO! You solved the mystery!",
+                "wrong": "❌ Try again, explorer!",
+                "win": "🏆 MASTER ARCHAEOLOGIST!"
             },
-            {
-                id: 2, en: "Mask of Agamemnon", el: "Μάσκα του Αγαμέμνονα",
-                img: "https://upload.wikimedia.org/wikipedia/commons/thumb/c/c3/Gold_Mask_of_Agamemnon.jpg/500px-Gold_Mask_of_Agamemnon.jpg",
-                desc_en: "Gold funeral mask from Mycenae (16th century BC).",
-                kids_en: "A golden mask for a powerful king! Pure gold, very heavy!",
-                desc_el: "Χρυσή νεκρική μάσκα από τις Μυκήνες.",
-                kids_el: "Μια χρυσή μάσκα για έναν δυνατό βασιλιά!"
-            },
-            {
-                id: 3, en: "Artemision Zeus", el: "Δίας του Αρτεμισίου",
-                img: "https://upload.wikimedia.org/wikipedia/commons/thumb/c/c8/Artemision_Bronze_NAMA_15161_n3.jpg/500px-Artemision_Bronze_NAMA_15161_n3.jpg",
-                desc_en: "Bronze statue of a god, found in a shipwreck.",
-                kids_en: "Is it Zeus or Poseidon? This giant statue lived underwater for years!",
-                desc_el: "Χάλκινο άγαλμα θεού, που βρέθηκε σε ναυάγιο.",
-                kids_el: "Είναι ο Δίας ή ο Ποσειδώνας; Ζούσε στο βυθό της θάλασσας!"
+            el: {
+                "m-expert-h": "ΟΔΗΓΟΣ ΕΚΘΕΣΗΣ", "m-expert-p": "Σάρωση & Ανακάλυψη Μυστικών",
+                "m-kids-h": "ΕΙΜΑΙ ΑΡΧΑΙΟΛΟΓΟΣ!", "m-kids-p": "15 Αποστολές της Αρχαίας Ελλάδας 🏺",
+                "exp-title": "ΕΘΝΙΚΟ ΑΡΧΑΙΟΛΟΓΙΚΟ ΜΟΥΣΕΙΟ", "close": "ΕΠΙΣΤΡΟΦΗ", "home": "ΑΡΧΙΚΟ ΜΕΝΟΥ",
+                "lvl": "ΑΠΟΣΤΟΛΗ", "scanning": "ΑΝΑΛΥΣΗ ΕΥΡΗΜΑΤΟΣ...",
+                "correct": "🌟 ΜΠΡΑΒΟ! Έλυσες το μυστήριο!",
+                "wrong": "❌ Δοκίμασε ξανά!",
+                "win": "🏆 ΑΡΧΙ-ΑΡΧΑΙΟΛΟΓΟΣ!"
             }
+        };
+
+        const artifacts = [
+            { id: 1, en: "Antikythera Mechanism", el: "Μηχανισμός Αντικυθήρων", img: "https://upload.wikimedia.org/wikipedia/commons/thumb/6/66/NAMA_Machine_d%27Anticyth%C3%A8re_1.jpg/400px-NAMA_Machine_d%27Anticyth%C3%A8re_1.jpg", desc_en: "World's first analog computer (150 BC), used for astronomical calculations.", desc_el: "Ο πρώτος αναλογικός υπολογιστής του κόσμου (150 π.Χ.) για αστρονομικούς υπολογισμούς." },
+            { id: 2, en: "Mask of Agamemnon", el: "Μάσκα του Αγαμέμνονα", img: "https://upload.wikimedia.org/wikipedia/commons/thumb/c/c3/Gold_Mask_of_Agamemnon.jpg/400px-Gold_Mask_of_Agamemnon.jpg", desc_en: "Gold funerary mask from Mycenae, found by Schliemann in 1876.", desc_el: "Χρυσή νεκρική μάσκα από τις Μυκήνες, βρέθηκε από τον Σλήμαν το 1876." },
+            { id: 3, en: "Artemision Zeus", el: "Δίας του Αρτεμισίου", img: "https://upload.wikimedia.org/wikipedia/commons/thumb/c/c8/Artemision_Bronze_NAMA_15161_n3.jpg/400px-Artemision_Bronze_NAMA_15161_n3.jpg", desc_en: "Grand bronze statue of Zeus or Poseidon found in a shipwreck (460 BC).", desc_el: "Μεγάλο χάλκινο άγαλμα του Δία ή του Ποσειδώνα από ναυάγιο (460 π.Χ.)." },
+            { id: 4, en: "Artemision Jockey", el: "Ο αναβάτης του Αρτεμισίου", img: "https://upload.wikimedia.org/wikipedia/commons/thumb/d/d4/NAMA_Jockey_Artemision.jpg/400px-NAMA_Jockey_Artemision.jpg", desc_en: "Rare Hellenistic bronze showing a young boy racing a galloping horse.", desc_el: "Σπάνιο ελληνιστικό χάλκινο που δείχνει ένα αγόρι σε καλπάζον άλογο." },
+            { id: 5, en: "The Diadumenos", el: "Ο Διαδούμενος", img: "https://upload.wikimedia.org/wikipedia/commons/thumb/6/65/NAMA_Diadum%C3%A8ne.jpg/400px-NAMA_Diadum%C3%A8ne.jpg", desc_en: "High-quality Roman copy of Polykleitos' masterpiece of an athlete.", desc_el: "Ρωμαϊκό αντίγραφο του αριστουργήματος του Πολύκλειτου." },
+            { id: 6, en: "Sphinx of Naxos", el: "Σφίγγα των Ναξίων", img: "https://upload.wikimedia.org/wikipedia/commons/thumb/8/82/NAMA_Sphinx_Naxiens.jpg/400px-NAMA_Sphinx_Naxiens.jpg", desc_en: "6th century BC sphinx, dedicated to Apollo by the people of Naxos.", desc_el: "Σφίγγα του 6ου αιώνα π.Χ., αφιερωμένη στον Απόλλωνα από τους Ναξίους." },
+            { id: 7, en: "Marathon Boy", el: "Έφηβος του Μαραθώνα", img: "https://upload.wikimedia.org/wikipedia/commons/thumb/1/11/NAMA_Ephebe_Marathon.jpg/400px-NAMA_Ephebe_Marathon.jpg", desc_en: "Classical youth statue found in the Bay of Marathon (340 BC).", desc_el: "Κλασικό άγαλμα εφήβου που βρέθηκε στον κόλπο του Μαραθώνα." },
+            { id: 8, en: "Varvakeion Athena", el: "Αθηνά Βαρβάκειος", img: "https://upload.wikimedia.org/wikipedia/commons/thumb/e/e0/NAMA_Ath%C3%A9na_Varvakeion.jpg/400px-NAMA_Ath%C3%A9na_Varvakeion.jpg", desc_en: "Roman copy of the famous Athena Parthenos statue by Phidias.", desc_el: "Ρωμαϊκό αντίγραφο του αγάλματος της Αθηνάς Παρθένου του Φειδία." }
         ];
 
-        function startApp(mode) {
-            currentMode = mode;
-            document.getElementById('splash').style.display = 'none';
-            document.getElementById('app-body').style.display = 'block';
-            document.body.className = 'mode-' + mode;
-            render();
+        const questions = [
+            { en: "Who is the King of the Gods?", el: "Βασιλιάς των Θεών;", opts_en: ["Zeus", "Ares"], opts_el: ["Δίας", "Άρης"], c: 0, s: "⚡" },
+            { en: "City of 300 warriors?", el: "Πόλη των 300;", opts_en: ["Sparta", "Athens"], opts_el: ["Σπάρτη", "Αθήνα"], c: 0, s: "🛡️" },
+            { en: "Protector of Athens?", el: "Προστάτιδα της Αθήνας;", opts_en: ["Athena", "Hera"], opts_el: ["Αθηνά", "Ήρα"], c: 0, s: "🦉" },
+            { en: "Where do Gods live?", el: "Πού ζουν οι Θεοί;", opts_en: ["Olympus", "Troy"], opts_el: ["Όλυμπος", "Τροία"], c: 0, s: "🏔️" },
+            { en: "Hero who killed Medusa?", el: "Ήρωας της Μέδουσας;", opts_en: ["Perseus", "Achilles"], opts_el: ["Περσέας", "Αχιλλέας"], c: 0, s: "⚔️" },
+            { en: "God of the Sea?", el: "Θεός της Θάλασσας;", opts_en: ["Poseidon", "Hermes"], opts_el: ["Ποσειδώνας", "Ερμής"], c: 0, s: "🔱" },
+            { en: "Messenger God?", el: "Αγγελιοφόρος Θεός;", opts_en: ["Hermes", "Apollo"], opts_el: ["Ερμής", "Απόλλων"], c: 0, s: "👟" },
+            { en: "Olympic Prize?", el: "Βραβείο Ολυμπιακών;", opts_en: ["Olive Wreath", "Gold Medal"], opts_el: ["Κότινος", "Μετάλλιο"], c: 0, s: "🌿" },
+            { en: "Ancient Maze?", el: "Αρχαίος Λαβύρινθος;", opts_en: ["Labyrinth", "Parthenon"], opts_el: ["Λαβύρινθος", "Παρθενώνας"], c: 0, s: "🌀" },
+            { en: "Snake-haired monster?", el: "Τέρας με φίδια;", opts_en: ["Medusa", "Hydra"], opts_el: ["Μέδουσα", "Ύδρα"], c: 0, s: "🐍" },
+            { en: "Troy's wooden gift?", el: "Δώρο της Τροίας;", opts_en: ["Horse", "Ship"], opts_el: ["Ίππος", "Πλοίο"], c: 0, s: "🐎" },
+            { en: "God of Music?", el: "Θεός της Μουσικής;", opts_en: ["Apollo", "Hades"], opts_el: ["Απόλλων", "Άδης"], c: 0, s: "🎵" },
+            { en: "Teacher of Alexander?", el: "Δάσκαλος Αλεξάνδρου;", opts_en: ["Aristotle", "Plato"], opts_el: ["Αριστοτέλης", "Πλάτων"], c: 0, s: "🎓" },
+            { en: "Author of Odyssey?", el: "Συγγραφέας Οδύσσειας;", opts_en: ["Homer", "Socrates"], opts_el: ["Όμηρος", "Σωκράτης"], c: 0, s: "📜" },
+            { en: "Goddess of Love?", el: "Θεά του Έρωτα;", opts_en: ["Aphrodite", "Artemis"], opts_el: ["Αφροδίτη", "Άρτεμις"], c: 0, s: "❤️" }
+        ];
+
+        let lang = 'en';
+        let level = 0;
+
+        function setLang(l) {
+            lang = l;
+            document.querySelectorAll('.l-btn').forEach(b => b.classList.remove('active'));
+            event.target.classList.add('active');
+            Object.keys(i18n[l]).forEach(key => {
+                const el = document.querySelector(`[data-key="${key}"]`);
+                if(el) el.innerText = i18n[l][key];
+            });
+            if(document.getElementById('expert-view').style.display === 'block') loadGrid();
+            if(document.getElementById('kids-view').style.display === 'block') loadGame();
         }
 
-        function toggleLang() {
-            currentLang = currentLang === 'en' ? 'el' : 'en';
-            render();
+        function openMode(m) {
+            document.getElementById('main-menu').style.display = 'none';
+            document.getElementById('home-btn').style.display = 'block';
+            document.getElementById(m + '-view').style.display = 'block';
+            if(m === 'expert') loadGrid();
+            if(m === 'kids') loadGame();
         }
 
-        function render() {
-            const h = document.getElementById('h-title');
-            if(currentMode === 'adult') {
-                h.innerText = currentLang === 'en' ? "ARCHAEOLOGICAL ARCHIVE" : "ΑΡΧΑΙΟΛΟΓΙΚΟ ΑΡΧΕΙΟ";
-            } else {
-                h.innerText = currentLang === 'en' ? "KIDS ADVENTURE: I'M AN ARCHAEOLOGIST!" : "ΠΕΡΙΠΕΤΕΙΑ: ΓΙΝΕ ΑΡΧΑΙΟΛΟΓΟΣ!";
-            }
-
-            const grid = document.getElementById('main-grid');
-            grid.innerHTML = data.map(item => `
-                <div class="card" onclick="openScan(${item.id})">
-                    <div class="img-box"><img src="${item.img}"></div>
-                    <p>${item[currentLang]}</p>
+        function loadGrid() {
+            const g = document.getElementById('grid');
+            g.innerHTML = artifacts.map(a => `
+                <div class="artifact-card" onclick="scanItem(${a.id})">
+                    <img src="${a.img}">
+                    <p>${lang === 'en' ? a.en : a.el}</p>
                 </div>
             `).join('');
         }
 
-        function openScan(id) {
-            const item = data.find(x => x.id === id);
-            document.getElementById('scan-img').src = item.img;
-            document.getElementById('info-name').innerText = item[currentLang];
+        function scanItem(id) {
+            const a = artifacts.find(x => x.id === id);
+            const scanner = document.getElementById('scanner');
+            const targetImg = document.getElementById('scan-img-target');
             
-            // Açıklama moduna göre değişir
-            if(currentMode === 'kids') {
-                document.getElementById('info-desc').innerText = item['kids_'+currentLang];
-                document.querySelector('.scan-content').style.fontFamily = 'Fredoka';
-            } else {
-                document.getElementById('info-desc').innerText = item['desc_'+currentLang];
-                document.querySelector('.scan-content').style.fontFamily = 'Roboto';
-            }
+            targetImg.src = a.img;
+            scanner.style.display = 'flex';
+            document.getElementById('res-content').innerHTML = `<h3>${i18n[lang]['scanning']}</h3>`;
             
-            document.getElementById('scanner').style.display = 'flex';
+            setTimeout(() => {
+                document.getElementById('res-content').innerHTML = `
+                    <h2 style="color:var(--gold); font-family: 'Cinzel'; margin:0;">${lang === 'en' ? a.en : a.el}</h2>
+                    <p style="margin:10px 0;">${lang === 'en' ? a.desc_en : a.desc_el}</p>
+                `;
+            }, 1200);
         }
 
         function closeScanner() { document.getElementById('scanner').style.display = 'none'; }
+
+        function loadGame() {
+            if(level >= 15) { alert(i18n[lang].win); location.reload(); return; }
+            const q = questions[level];
+            document.getElementById('lvl-txt').innerText = level + 1;
+            document.getElementById('q-txt').innerText = lang === 'en' ? q.en : q.el;
+            document.getElementById('q-opts').innerHTML = (lang === 'en' ? q.opts_en : q.opts_el).map((o, i) => `
+                <button class="opt-btn" onclick="answer(${i})">${o}</button>
+            `).join('');
+            updateShelf();
+        }
+
+        function answer(i) {
+            if(i === questions[level].c) { level++; loadGame(); }
+            else alert(i18n[lang].wrong);
+        }
+
+        function updateShelf() {
+            document.getElementById('shelf-grid').innerHTML = questions.map((q, i) => `
+                <div class="slot ${i < level ? 'found' : ''}">${q.s}</div>
+            `).join('');
+        }
     </script>
 </body>
 </html>

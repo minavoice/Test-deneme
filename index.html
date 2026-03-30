@@ -3,40 +3,40 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>National Museum Pro</title>
+    <title>National Museum - Visual Fix</title>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@700&family=Roboto:wght@400;900&display=swap');
-        :root { --gold: #D4AF37; --bg: #0f0f0f; }
-        body, html { margin: 0; padding: 0; background: var(--bg); color: #fff; font-family: 'Roboto', sans-serif; }
+        :root { --gold: #D4AF37; --bg: #050505; }
+        body, html { margin: 0; padding: 0; background: var(--bg); color: #fff; font-family: 'Roboto', sans-serif; overflow-x: hidden; }
 
-        /* LANGUAGE BAR */
-        .lang-bar { position: fixed; top: 15px; right: 15px; z-index: 1000; }
-        .l-btn { background: #000; border: 1px solid var(--gold); color: var(--gold); padding: 8px 15px; cursor: pointer; font-family: 'Cinzel'; border-radius: 4px; font-weight: bold; }
+        /* DİL SEÇENEĞİ */
+        .lang-bar { position: fixed; top: 15px; right: 15px; z-index: 1000; display: flex; gap: 5px; }
+        .l-btn { background: rgba(0,0,0,0.8); border: 1px solid var(--gold); color: var(--gold); padding: 8px 15px; cursor: pointer; font-family: 'Cinzel'; border-radius: 4px; font-weight: bold; }
         .l-btn.active { background: var(--gold); color: #000; }
 
-        /* HEADER */
-        header { background: #fff; color: #000; padding: 20px; text-align: center; border-bottom: 5px solid var(--gold); font-family: 'Cinzel'; font-size: 1.2rem; }
+        header { background: #fff; color: #000; padding: 25px; text-align: center; border-bottom: 5px solid var(--gold); font-family: 'Cinzel'; font-size: 1.2rem; letter-spacing: 1px; }
 
-        /* GRID */
-        .grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; padding: 20px; padding-bottom: 100px; }
-        .card { background: #fff; border-radius: 12px; overflow: hidden; border-bottom: 4px solid var(--gold); cursor: pointer; transition: 0.3s; }
-        .card:active { transform: scale(0.95); }
-        .card img { width: 100%; height: 160px; object-fit: cover; background: #222; display: block; }
-        .card p { padding: 12px; margin: 0; color: #000; font-weight: 900; text-align: center; font-size: 0.8rem; text-transform: uppercase; min-height: 40px; display: flex; align-items: center; justify-content: center; }
+        /* ANA IZGARA */
+        .grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; padding: 15px; padding-bottom: 100px; }
+        .card { background: #fff; border-radius: 12px; overflow: hidden; border-bottom: 4px solid var(--gold); cursor: pointer; transition: 0.3s ease; box-shadow: 0 4px 15px rgba(0,0,0,0.5); }
+        .card:active { transform: scale(0.96); }
+        .img-box { width: 100%; height: 160px; background: #1a1a1a; display: flex; align-items: center; justify-content: center; overflow: hidden; }
+        .card img { width: 100%; height: 100%; object-fit: cover; }
+        .card p { padding: 10px; margin: 0; color: #000; font-weight: 900; text-align: center; font-size: 0.75rem; text-transform: uppercase; }
 
-        /* SCANNER & INFO BOX */
-        #scanner { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.98); z-index: 2000; flex-direction: column; align-items: center; justify-content: center; padding: 20px; box-sizing: border-box; }
-        .scan-frame { width: 240px; height: 240px; border: 2px solid var(--gold); position: relative; overflow: hidden; margin-bottom: 20px; }
-        .scan-line { width: 100%; height: 3px; background: #00FF00; position: absolute; animation: scanAnim 2s infinite linear; box-shadow: 0 0 15px #00FF00; }
-        @keyframes scanAnim { 0% { top: 0; } 100% { top: 100%; } }
-        
-        .info-box { background: #fff; color: #000; padding: 25px; border-radius: 15px; width: 100%; max-width: 500px; text-align: center; box-shadow: 0 0 30px rgba(212,175,55,0.3); }
-        .info-box h2 { font-family: 'Cinzel'; color: var(--gold); margin: 0 0 10px 0; font-size: 1.4rem; border-bottom: 1px solid #ddd; padding-bottom: 10px; }
-        .info-box p { font-size: 0.95rem; line-height: 1.6; margin-bottom: 20px; font-weight: 400; }
-        .close-btn { background: #000; color: var(--gold); border: 2px solid var(--gold); padding: 12px 40px; border-radius: 30px; cursor: pointer; font-family: 'Cinzel'; font-weight: bold; width: 100%; }
+        /* TARAMA EKRANI (SCANNER) */
+        #scanner { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.98); z-index: 2000; flex-direction: column; align-items: center; overflow-y: auto; padding: 20px 0; }
+        .scan-visual { width: 90%; max-width: 400px; border: 2px solid var(--gold); position: relative; margin-top: 20px; overflow: hidden; border-radius: 10px; }
+        .scan-visual img { width: 100%; display: block; filter: brightness(0.8); }
+        .scan-line { width: 100%; height: 4px; background: #00FF00; position: absolute; top: 0; animation: scanLine 2.5s infinite linear; box-shadow: 0 0 20px #00FF00; }
+        @keyframes scanLine { 0% { top: 0; } 100% { top: 100%; } }
 
-        /* BUTTONS */
-        .nav-home { position: fixed; bottom: 25px; left: 50%; transform: translateX(-50%); background: #000; color: #fff; border: 2px solid var(--gold); padding: 12px 40px; border-radius: 30px; cursor: pointer; font-family: 'Cinzel'; z-index: 500; font-weight: bold; }
+        .info-panel { background: #fff; color: #000; width: 90%; max-width: 450px; padding: 25px; border-radius: 15px; margin-top: -10px; text-align: center; position: relative; z-index: 5; box-sizing: border-box; }
+        .info-panel h2 { font-family: 'Cinzel'; color: var(--gold); margin: 0 0 10px 0; font-size: 1.3rem; border-bottom: 2px solid #eee; padding-bottom: 8px; }
+        .info-panel p { font-size: 0.9rem; line-height: 1.5; margin-bottom: 20px; color: #333; }
+        .close-btn { background: #000; color: var(--gold); border: 2px solid var(--gold); padding: 12px; border-radius: 30px; cursor: pointer; width: 100%; font-family: 'Cinzel'; font-weight: bold; }
+
+        .btn-home { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); background: #000; color: #fff; border: 2px solid var(--gold); padding: 12px 40px; border-radius: 30px; cursor: pointer; font-family: 'Cinzel'; z-index: 500; }
     </style>
 </head>
 <body>
@@ -46,63 +46,66 @@
         <button class="l-btn" id="el-btn" onclick="setLang('el')">EL</button>
     </div>
 
-    <header id="h-title">NATIONAL ARCHAEOLOGICAL MUSEUM</header>
+    <header id="header-txt">NATIONAL ARCHAEOLOGICAL MUSEUM</header>
 
-    <div class="grid" id="main-grid"></div>
+    <div class="grid" id="museum-grid"></div>
 
     <div id="scanner">
-        <div class="scan-frame"><div class="scan-line"></div></div>
-        <div class="info-box">
-            <h2 id="info-title">IDENTIFYING...</h2>
+        <div class="scan-visual">
+            <img id="scan-img" src="" alt="Artifact">
+            <div class="scan-line"></div>
+        </div>
+        <div class="info-panel">
+            <h2 id="info-title">ANALYZING...</h2>
             <p id="info-desc"></p>
-            <button class="close-btn" onclick="closeScan()" id="close-txt">CLOSE</button>
+            <button class="close-btn" onclick="closeScanner()" id="close-txt">CLOSE GUIDE</button>
         </div>
     </div>
 
-    <button class="nav-home" onclick="location.reload()" id="home-txt">MAIN MENU</button>
+    <button class="btn-home" onclick="location.reload()" id="home-txt">MAIN MENU</button>
 
     <script>
         const i18n = {
-            en: { title: "NATIONAL MUSEUM GUIDE", close: "CLOSE", scanning: "ANALYZING...", home: "MAIN MENU" },
-            el: { title: "ΕΘΝΙΚΟ ΑΡΧΑΙΟΛΟΓΙΚΟ ΜΟΥΣΕΙΟ", close: "ΚΛΕΙΣΙΜΟ", scanning: "ΑΝΑΛΥΣΗ...", home: "ΑΡΧΙΚΟ ΜΕΝΟΥ" }
+            en: { title: "NATIONAL MUSEUM GUIDE", close: "CLOSE GUIDE", home: "MAIN MENU", scanning: "ANALYZING..." },
+            el: { title: "ΕΘΝΙΚΟ ΑΡΧΑΙΟΛΟΓΙΚΟ ΜΟΥΣΕΙΟ", close: "ΚΛΕΙΣΙΜΟ", home: "ΑΡΧΙΚΟ ΜΕΝΟΥ", scanning: "ΑΝΑΛΥΣΗ..." }
         };
 
         const artifacts = [
             { 
                 id: 1, en: "Antikythera Mechanism", el: "Μηχανισμός Αντικυθήρων", 
-                img: "https://cdn.pixabay.com/photo/2020/06/15/01/06/mechanism-5300055_1280.jpg",
-                desc_en: "An ancient Greek hand-powered analog computer from 150 BC. It was used to predict astronomical positions and eclipses for calendrical purposes.",
-                desc_el: "Ένας αρχαίος ελληνικός αναλογικός υπολογιστής από το 150 π.Χ. Χρησιμοποιήθηκε για την πρόβλεψη αστρονομικών θέσεων και εκλείψεων."
+                img: "https://upload.wikimedia.org/wikipedia/commons/thumb/6/66/NAMA_Machine_d%27Anticyth%C3%A8re_1.jpg/500px-NAMA_Machine_d%27Anticyth%C3%A8re_1.jpg",
+                desc_en: "World's first analog computer (150 BC), found in a shipwreck. Used to track astronomical cycles.",
+                desc_el: "Ο πρώτος αναλογικός υπολογιστής στον κόσμο (150 π.Χ.), που βρέθηκε σε ναυάγιο."
             },
             { 
                 id: 2, en: "Mask of Agamemnon", el: "Μάσκα του Αγαμέμνονα", 
-                img: "https://cdn.pixabay.com/photo/2017/08/17/07/47/museum-2650347_1280.jpg",
-                desc_en: "A funeral mask made of solid gold, discovered in Mycenae in 1876. It dates back to the Bronze Age (16th century BC).",
-                desc_el: "Μια νεκρική μάσκα από καθαρό χρυσό, που ανακαλύφθηκε στις Μυκήνες το 1876. Χρονολογείται από την Εποχή του Χαλκού."
+                img: "https://upload.wikimedia.org/wikipedia/commons/thumb/c/c3/Gold_Mask_of_Agamemnon.jpg/500px-Gold_Mask_of_Agamemnon.jpg",
+                desc_en: "A 16th-century BC funerary mask made of gold, discovered by Heinrich Schliemann in Mycenae.",
+                desc_el: "Χρυσή νεκρική μάσκα του 16ου αιώνα π.Χ., που ανακαλύφθηκε στις Μυκήνες."
             },
             { 
-                id: 3, en: "Zeus of Artemision", el: "Δίας του Αρτεμισίου", 
-                img: "https://cdn.pixabay.com/photo/2020/03/10/16/47/statue-4919501_1280.jpg",
-                desc_en: "A majestic bronze statue recovered from the sea off Cape Artemision. It represents a god, either Zeus throwing a thunderbolt or Poseidon.",
-                desc_el: "Ένα μεγαλοπρεπές χάλκινο άγαλμα που ανασύρθηκε από τη θάλασσα. Αναπαριστά είτε τον Δία είτε τον Ποσειδώνα."
+                id: 3, en: "Artemision Zeus", el: "Δίας του Αρτεμισίου", 
+                img: "https://upload.wikimedia.org/wikipedia/commons/thumb/c/c8/Artemision_Bronze_NAMA_15161_n3.jpg/500px-Artemision_Bronze_NAMA_15161_n3.jpg",
+                desc_en: "A majestic bronze god (Zeus or Poseidon) caught in mid-action, recovered from the sea.",
+                desc_el: "Ένα μεγαλοπρεπές χάλκινο άγαλμα θεού (Δία ή Ποσειδώνα) που ανασύρθηκε από τη θάλασσα."
             },
             { 
-                id: 4, en: "Jockey of Artemision", el: "Ο αναβάτης του Αρτεμισίου", 
-                img: "https://cdn.pixabay.com/photo/2016/11/29/09/16/architecture-1868667_1280.jpg",
-                desc_en: "A dynamic Hellenistic bronze statue of a young boy racing a horse. Found in the same shipwreck as the Zeus statue.",
-                desc_el: "Ένα δυναμικό ελληνιστικό χάλκινο άγαλμα ενός νεαρού αγοριού που ιππεύει ένα άλογο. Βρέθηκε στο ίδιο ναυάγιο με τον Δία."
+                id: 4, en: "Artemision Jockey", el: "Ο αναβάτης του Αρτεμισίου", 
+                img: "https://upload.wikimedia.org/wikipedia/commons/thumb/d/d4/NAMA_Jockey_Artemision.jpg/500px-NAMA_Jockey_Artemision.jpg",
+                desc_en: "A dynamic bronze group of a racing horse and a young boy, a masterpiece of Hellenistic art.",
+                desc_el: "Ένα δυναμικό χάλκινο σύμπλεγμα αλόγου και αναβάτη, αριστούργημα της ελληνιστικής τέχνης."
             },
             { 
-                id: 5, en: "Marble Kouros", el: "Μάρμαρο Κούρος", 
-                img: "https://cdn.pixabay.com/photo/2016/11/19/14/41/statue-1839655_1280.jpg",
-                desc_en: "A statue of a standing youth from the Archaic period. These statues served as either tomb markers or sanctuary offerings.",
-                desc_el: "Ένα άγαλμα όρθιου νεαρού από την Αρχαϊκή περίοδο. Αυτά τα αγάλματα χρησίμευαν ως επιτύμβιες στήλες ή αναθήματα."
+                id: 5, en: "The Diadumenos", el: "Ο Διαδούμενος", 
+                img: "https://upload.wikimedia.org/wikipedia/commons/thumb/6/65/NAMA_Diadum%C3%A8ne.jpg/500px-NAMA_Diadum%C3%A8ne.jpg",
+                desc_en: "Classical marble statue of a victorious athlete tying a victory ribbon around his head.",
+                desc_el: "Κλασικό μαρμάρινο άγαλμα νικητή αθλητή που δένει την ταινία της νίκης."
             },
             { 
                 id: 6, en: "Sphinx of Naxos", el: "Σφίγγα των Ναξίων", 
-                img: "https://cdn.pixabay.com/photo/2019/12/12/10/17/sphinx-4690382_1280.jpg",
-                desc_en: "A colossal marble sphinx guardian from 560 BC. It originally stood on a 12-meter column in the Sanctuary of Apollo at Delphi.",
-                desc_el: "Μια κολοσσιαία μαρμάρινη σφίγγα-φύλακας από το 560 π.Χ. Αρχικά στεκόταν σε μια κολώνα 12 μέτρων στους Δελφούς."
+                img: "https://upload.wikimedia.org/wikipedia/commons/thumb/8/82/NAMA_Sphinx_Naxiens.jpg/500px-NAMA_Sphinx_Naxiens.jpg",
+                desc_en: "Archaic colossal sphinx from 560 BC, once guarding the temple of Apollo at Delphi.",
+                desc_el: "Αρχαϊκή κολοσσιαία σφίγγα του 560 π.Χ., που φύλαγε το ναό του Απόλλωνα."
             }
         ];
 
@@ -112,42 +115,49 @@
             lang = l;
             document.querySelectorAll('.l-btn').forEach(b => b.classList.remove('active'));
             document.getElementById(l + '-btn').classList.add('active');
-            document.getElementById('h-title').innerText = i18n[l].title;
+            document.getElementById('header-txt').innerText = i18n[l].title;
             document.getElementById('close-txt').innerText = i18n[l].close;
             document.getElementById('home-txt').innerText = i18n[l].home;
             renderGrid();
         }
 
         function renderGrid() {
-            const grid = document.getElementById('main-grid');
+            const grid = document.getElementById('museum-grid');
             grid.innerHTML = artifacts.map(a => `
-                <div class="card" onclick="openScan(${a.id})">
-                    <img src="${a.img}" loading="lazy" alt="${a[lang]}">
+                <div class="card" onclick="openScanner(${a.id})">
+                    <div class="img-box">
+                        <img src="${a.img}" loading="lazy">
+                    </div>
                     <p>${a[lang]}</p>
                 </div>
             `).join('');
         }
 
-        function openScan(id) {
+        function openScanner(id) {
             const art = artifacts.find(x => x.id === id);
             const scanner = document.getElementById('scanner');
+            const scanImg = document.getElementById('scan-img');
+            
+            // Önce görseli hazırla
+            scanImg.src = art.img;
             scanner.style.display = 'flex';
             
             document.getElementById('info-title').innerText = i18n[lang].scanning;
             document.getElementById('info-desc').innerText = "";
 
+            // Tarama efekti beklemesi
             setTimeout(() => {
                 document.getElementById('info-title').innerText = art[lang];
                 document.getElementById('info-desc').innerText = lang === 'en' ? art.desc_en : art.desc_el;
-            }, 1200);
+            }, 1000);
         }
 
-        function closeScan() {
+        function closeScanner() {
             document.getElementById('scanner').style.display = 'none';
         }
 
-        // Auto-load
-        renderGrid();
+        // Başlangıç yüklemesi
+        setLang('en');
     </script>
 </body>
 </html>

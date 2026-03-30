@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Malkafa - Antikythera Global</title>
+    <style>
+        :root { --bg: #0A0414; --panel: #1F0B42; --gold: #FFD700; --text: #FFFFFF; --gray: #A094B1; }
+        body { margin: 0; background: var(--bg); color: var(--text); font-family: 'Segoe UI', sans-serif; overflow-x: hidden; }
+        
+        /* DİL SEÇİCİ */
+        .lang-bar { position: fixed; top: 20px; right: 20px; z-index: 100; display: flex; gap: 10px; }
+        .lang-btn { background: rgba(255,215,0,0.1); border: 1px solid var(--gold); color: var(--gold); padding: 5px 12px; border-radius: 5px; cursor: pointer; font-size: 12px; font-weight: bold; transition: 0.3s; }
+        .lang-btn:hover, .lang-btn.active { background: var(--gold); color: var(--bg); }
+
+        /* GİRİŞ EKRANI */
+        #intro { height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; background: radial-gradient(circle, #25104A 0%, #0A0414 100%); transition: 0.5s; }
+        .logo-main { width: 140px; height: 140px; border: 3px solid var(--gold); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 60px; box-shadow: 0 0 30px var(--gold); margin-bottom: 20px; }
+        .btn-main { margin-top: 40px; padding: 15px 60px; background: var(--gold); color: var(--bg); border: none; border-radius: 30px; font-weight: 900; cursor: pointer; letter-spacing: 2px; text-transform: uppercase; }
+
+        /* ANA MENÜ VE GRİD */
+        #menu { display: none; padding: 60px 20px 20px; text-align: center; }
+        .grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px; max-width: 450px; margin: 30px auto; }
+        .char-card { background: var(--panel); border: 1px solid rgba(255,215,0,0.2); padding: 20px; border-radius: 20px; cursor: pointer; transition: 0.3s; }
+        .char-card:hover { border-color: var(--gold); transform: translateY(-5px); box-shadow: 0 5px 15px rgba(255,215,0,0.2); }
+        .char-icon { font-size: 35px; display: block; margin-bottom: 10px; }
+
+        /* DETAY VE AKORDEON */
+        #detail { display: none; padding: 60px 20px 20px; }
+        .acc-item { background: var(--panel); border-radius: 12px; margin-bottom: 10px; border: 1px solid rgba(255,255,255,0.05); }
+        .acc-header { padding: 18px; display: flex; justify-content: space-between; align-items: center; cursor: pointer; font-weight: bold; color: var(--gold); font-size: 13px; }
+        .acc-body { padding: 0 20px 20px; color: var(--gray); display: none; line-height: 1.5; font-size: 14px; }
+        
+        .play-circle { width: 85px; height: 85px; border: 2px solid var(--gold); border-radius: 50%; margin: 30px auto; display: flex; align-items: center; justify-content: center; color: var(--gold); font-size: 9px; font-weight: bold; text-align: center; cursor: pointer; animation: pulse 2s infinite; }
+        @keyframes pulse { 0% { box-shadow: 0 0 0 0 rgba(255,215,0,0.4); } 70% { box-shadow: 0 0 0 15px rgba(255,215,0,0); } 100% { box-shadow: 0 0 0 0 rgba(255,215,0,0); } }
+    </style>
+</head>
+<body>
+
+    <div class="lang-bar">
+        <button class="lang-btn active" onclick="changeLang('tr', this)">TR</button>
+        <button class="lang-btn" onclick="changeLang('el', this)">EL</button>
+        <button class="lang-btn" onclick="changeLang('en', this)">EN</button>
+    </div>
+
+    <div id="intro">
+        <div class="logo-main">⚙️</div>
+        <h1 id="main-title" style="color: var(--gold); letter-spacing: 4px;">ANTIKYTHERA</h1>
+        <p id="intro-desc" style="max-width: 80%; text-align: center; color: var(--gray);">Mekanizmanın 122 yıllık gizemini keşfedin.</p>
+        <button id="entry-btn" class="btn-main" onclick="showView('menu')">GİRİŞ</button>
+    </div>
+
+    <div id="menu">
+        <h2 id="menu-title" class="gold">UZMANLIK SEÇİN</h2>
+        <div class="grid" id="menu-grid"></div>
+    </div>
+
+    <div id="detail">
+        <span onclick="showView('menu')" style="color:var(--gold); cursor:pointer; font-weight:bold;">← <span id="back-txt">GERİ</span></span>
+        <div id="detail-content"></div>
+        <div class="play-circle" id="play-btn">AS PAIZOUME</div>
+    </div>
+
+    <script>
+        const translations = {
+            tr: {
+                title: "ANTIKYTHERA", desc: "Mekanizmanın 122 yıllık gizemini keşfedin.", entry: "GİRİŞ",
+                menuTitle: "BİR UZMAN SEÇİN", back: "GERİ", play: "OYNA",
+                roles: [
+                    {n: "Arkeolog", i: "🏛️", s: [{t: "DÖNEM", c: "M.Ö. 75-50 arası."}, {t: "ÇIKARMA", c: "1900 yılında bulundu."}]},
+                    {n: "Dalgıç", i: "🤿", s: [{t: "DALIŞ", c: "60 metre derinlikte operasyon."}]},
+                    {n: "Konservatör", i: "🧪", s: [{t: "KORUMA", c: "Eserlerin kimyasal temizliği."}]},
+                    {n: "Tarihçi", i: "📜", s: [{t: "YAZITLAR", c: "Antik yazıların çözülmesi."}]},
+                    {n: "Mühendis", i: "⚙️", s: [{t: "MEKANİZMA", c: "Dişli çark sistemi."}]},
+                    {n: "Gazeteci", i: "🎤", s: [{t: "HABER", c: "Dünya basınına duyuru."}]}
+                ]
+            },
+            el: {
+                title: "ΑΝΤΙΚΥΘΗΡΑ", desc: "Ανακαλύψτε το μυστήριο 122 ετών.", entry: "ΕΙΣΟΔΟΣ",
+                menuTitle: "ΕΠΙΛΕΞΤΕ ΕΙΔΙΚΟ", back: "ΠΙΣΩ", play: "ΑΣ ΠΑΙΞΟΥΜΕ",
+                roles: [
+                    {n: "Αρχαιολόγος", i: "🏛️", s: [{t: "ΕΠΟΧΗ", c: "Μεταξύ 75-50 π.Χ."}, {t: "ΑΝΕΛΚΥΣΗ", c: "Βρέθηκε το 1900."}]},
+                    {n: "Δύτης", i: "🤿", s: [{t: "ΚΑΤΑΔΥΣΗ", c: "Επιχείρηση στα 60 μέτρα."}]},
+                    {n: "Συντηρητής", i: "🧪", s: [{t: "ΣΥΝΤΗΡΗΣΗ", c: "Χημικός καθαρισμός."}]},
+                    {n: "Ιστορικός", i: "📜", s: [{t: "ΕΠΙΓΡΑΦΕΣ", c: "Αποκρυπτογράφηση κειμένων."}]},
+                    {n: "Μηχανικός", i: "⚙️", s: [{t: "ΜΗΧΑΝΙΣΜΟΣ", c: "Σύστημα οδοντωτών τροχών."}]},
+                    {n: "Δημοσιογράφος", i: "🎤", s: [{t: "ΕΙΔΗΣΕΙΣ", c: "Παγκόσμια ανακοίνωση."}]}
+                ]
+            },
+            en: {
+                title: "ANTIKYTHERA", desc: "Discover the 122-year mystery.", entry: "ENTER",
+                menuTitle: "CHOOSE AN EXPERT", back: "BACK", play: "LET'S PLAY",
+                roles: [
+                    {n: "Archaeologist", i: "🏛️", s: [{t: "EPOCH", c: "Between 75-50 BC."}, {t: "RECOVERY", c: "Found in 1900."}]},
+                    {n: "Diver", i: "🤿", s: [{t: "DIVING", c: "Operation at 60 meters."}]},
+                    {n: "Conservator", i: "🧪", s: [{t: "CONSERVATION", c: "Chemical cleaning."}]},
+                    {n: "Historian", i: "📜", s: [{t: "INSCRIPTIONS", c: "Decoding ancient texts."}]},
+                    {n: "Engineer", i: "⚙️", s: [{t: "MECHANISM", c: "Gear system."}]},
+                    {n: "Journalist", i: "🎤", s: [{t: "NEWS", c: "Global announcement."}]}
+                ]
+            }
+        };
+
+        let currentLang = 'tr';
+
+        function changeLang(lang, btn) {
+            currentLang = lang;
+            document.querySelectorAll('.lang-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            updateUI();
+        }
+
+        function updateUI() {
+            const t = translations[currentLang];
+            document.getElementById('main-title').innerText = t.title;
+            document.getElementById('intro-desc').innerText = t.desc;
+            document.getElementById('entry-btn').innerText = t.entry;
+            document.getElementById('menu-title').innerText = t.menuTitle;
+            document.getElementById('back-txt').innerText = t.back;
+            document.getElementById('play-btn').innerText = t.play;
+            
+            const grid = document.getElementById('menu-grid');
+            grid.innerHTML = '';
+            t.roles.forEach((r, idx) => {
+                grid.innerHTML += `<div class="char-card" onclick="showDetail(${idx})"><span class="char-icon">${r.i}</span><b>${r.n}</b></div>`;
+            });
+        }
+
+        function showView(id) {
+            ['intro', 'menu', 'detail'].forEach(v => document.getElementById(v).style.display = 'none');
+            document.getElementById(id).style.display = (id === 'menu' || id === 'detail') ? 'block' : 'flex';
+        }
+
+        function showDetail(idx) {
+            const r = translations[currentLang].roles[idx];
+            let html = `<h2 class="gold" style="text-align:center; margin:20px 0;">${r.n}</h2>`;
+            r.s.forEach((sec, sIdx) => {
+                html += `<div class="acc-item"><div class="acc-header" onclick="toggleAcc(${sIdx})">${sec.t} <span>▼</span></div><div class="acc-body" id="b-${sIdx}">${sec.c}</div></div>`;
+            });
+            document.getElementById('detail-content').innerHTML = html;
+            showView('detail');
+        }
+
+        function toggleAcc(id) {
+            const b = document.getElementById('b-'+id);
+            b.style.display = b.style.display === 'block' ? 'none' : 'block';
+        }
+
+        updateUI();
+    </script>
+</body>
+</html>
+

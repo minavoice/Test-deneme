@@ -1,122 +1,172 @@
 <!DOCTYPE html>
-<html lang="tr">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Müze Rehberi Pro</title>
+    <title>Malkafa Museum Guide</title>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@700&family=Roboto:wght@400;900&display=swap');
-        :root { --gold: #D4AF37; --bg: #0a0a0a; }
-        body, html { margin: 0; padding: 0; background: var(--bg); color: #fff; font-family: 'Roboto', sans-serif; }
+        :root { --gold: #D4AF37; --bg: #050505; }
+        body, html { margin: 0; padding: 0; background: var(--bg); color: #fff; font-family: 'Roboto', sans-serif; overflow-x: hidden; }
 
-        header { background: #fff; color: #000; padding: 20px; text-align: center; border-bottom: 5px solid var(--gold); font-family: 'Cinzel'; font-size: 1.1rem; }
+        /* DİL BARİ */
+        .lang-bar { position: fixed; top: 15px; right: 15px; z-index: 1000; display: flex; gap: 8px; }
+        .l-btn { background: rgba(0,0,0,0.9); border: 1px solid var(--gold); color: var(--gold); padding: 8px 16px; cursor: pointer; font-family: 'Cinzel'; border-radius: 6px; font-weight: bold; }
+        .l-btn.active { background: var(--gold); color: #000; }
 
-        .grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; padding: 15px; padding-bottom: 100px; }
-        .card { background: #fff; border-radius: 10px; overflow: hidden; border-bottom: 4px solid var(--gold); cursor: pointer; }
-        
-        .img-container { width: 100%; height: 160px; background: #222; overflow: hidden; }
+        header { background: #fff; color: #000; padding: 25px; text-align: center; border-bottom: 5px solid var(--gold); font-family: 'Cinzel'; font-size: 1.1rem; }
+
+        /* ARTIFACT GRID */
+        .grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; padding: 15px; }
+        .card { background: #fff; border-radius: 12px; overflow: hidden; border-bottom: 4px solid var(--gold); cursor: pointer; position: relative; }
+        .img-box { width: 100%; height: 160px; background: #222; overflow: hidden; }
         .card img { width: 100%; height: 100%; object-fit: cover; }
         .card p { padding: 10px; margin: 0; color: #000; font-weight: 900; text-align: center; font-size: 0.75rem; text-transform: uppercase; }
 
-        /* TARAMA EKRANI */
-        #scanner { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.98); z-index: 2000; flex-direction: column; align-items: center; justify-content: flex-start; padding-top: 30px; }
-        .scan-box { width: 85%; max-width: 400px; border: 2px solid var(--gold); position: relative; margin-bottom: 20px; }
+        /* OYUN ALANI */
+        .game-section { background: #111; padding: 20px; text-align: center; border-top: 2px solid var(--gold); margin-top: 20px; padding-bottom: 100px; }
+        .game-section h3 { font-family: 'Cinzel'; color: var(--gold); margin-bottom: 15px; }
+        .shelf { display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; }
+        .slot { width: 50px; height: 50px; background: #222; border: 1px dashed var(--gold); border-radius: 8px; display: flex; align-items: center; justify-content: center; transition: 0.5s; opacity: 0.3; }
+        .slot.found { opacity: 1; border-style: solid; background: #fff; transform: scale(1.1); box-shadow: 0 0 10px var(--gold); }
+        .slot img { width: 80%; height: 80%; object-fit: contain; }
+
+        /* TARAMA PANELİ */
+        #scanner { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.98); z-index: 2000; flex-direction: column; align-items: center; padding-top: 30px; }
+        .scan-visual { width: 85%; max-width: 400px; border: 2px solid var(--gold); position: relative; }
         #scan-img { width: 100%; display: block; }
         .scan-line { width: 100%; height: 4px; background: #00FF00; position: absolute; top: 0; animation: scanLine 2s infinite linear; box-shadow: 0 0 15px #00FF00; }
         @keyframes scanLine { 0% { top: 0; } 100% { top: 100%; } }
 
-        .info-card { background: #fff; color: #000; width: 85%; max-width: 400px; padding: 20px; border-radius: 10px; text-align: center; box-sizing: border-box; }
-        .info-card h2 { font-family: 'Cinzel'; color: var(--gold); margin-top: 0; font-size: 1.2rem; }
-        .close-btn { background: #000; color: var(--gold); border: 2px solid var(--gold); padding: 12px; border-radius: 25px; cursor: pointer; width: 100%; font-family: 'Cinzel'; font-weight: bold; margin-top: 15px; }
+        .info-card { background: #fff; color: #000; width: 85%; max-width: 400px; padding: 20px; border-radius: 0 0 15px 15px; text-align: center; }
+        .info-card h2 { font-family: 'Cinzel'; color: var(--gold); margin: 0; font-size: 1.2rem; }
+        .info-card p { font-size: 0.9rem; line-height: 1.4; margin: 15px 0; }
+        .close-btn { background: #000; color: var(--gold); border: 2px solid var(--gold); padding: 12px; border-radius: 30px; cursor: pointer; width: 100%; font-family: 'Cinzel'; font-weight: bold; }
+
+        .nav-home { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); background: #000; color: #fff; border: 2px solid var(--gold); padding: 12px 40px; border-radius: 30px; cursor: pointer; font-family: 'Cinzel'; z-index: 500; }
     </style>
 </head>
 <body>
 
-    <header>ULUSAL ARKEOLOJİ MÜZESİ</header>
+    <div class="lang-bar">
+        <button class="l-btn active" id="en-btn" onclick="setLang('en')">EN</button>
+        <button class="l-btn" id="el-btn" onclick="setLang('el')">EL</button>
+    </div>
+
+    <header id="h-title">NATIONAL ARCHAEOLOGICAL MUSEUM</header>
 
     <div class="grid" id="main-grid"></div>
 
+    <div class="game-section">
+        <h3 id="game-title">COLLECTION GAME</h3>
+        <div class="shelf" id="game-shelf"></div>
+    </div>
+
     <div id="scanner">
-        <div class="scan-box">
+        <div class="scan-visual">
             <img id="scan-img" src="">
             <div class="scan-line"></div>
         </div>
         <div class="info-card">
-            <h2 id="info-title">YÜKLENİYOR...</h2>
+            <h2 id="info-title">SCANNING...</h2>
             <p id="info-desc"></p>
-            <button class="close-btn" onclick="closeScan()">KAPAT</button>
+            <button class="close-btn" onclick="closeScan()" id="close-txt">CLOSE</button>
         </div>
     </div>
 
+    <button class="nav-home" onclick="location.reload()" id="home-txt">MAIN MENU</button>
+
     <script>
+        const i18n = {
+            en: { title: "NATIONAL MUSEUM GUIDE", game: "COLLECTION GAME", close: "CLOSE GUIDE", home: "MAIN MENU" },
+            el: { title: "ΕΘΝΙΚΟ ΑΡΧΑΙΟΛΟΓΙΚΟ ΜΟΥΣΕΙΟ", game: "ΠΑΙΧΝΙΔΙ ΣΥΛΛΟΓΗΣ", close: "ΚΛΕΙΣΙΜΟ", home: "ΑΡΧΙΚΟ ΜΕΝΟΥ" }
+        };
+
         const artifacts = [
             { 
-                id: 1, name: "Antikythera Mekanizması", 
-                img1: "https://upload.wikimedia.org/wikipedia/commons/6/66/NAMA_Machine_d%27Anticyth%C3%A8re_1.jpg",
-                img2: "https://www.worldhistory.org/uploads/images/1501.jpg",
-                desc: "Dünyanın bilinen en eski analog bilgisayarıdır (M.Ö. 150). Gök cisimlerinin konumunu tahmin etmek için kullanılıyordu."
+                id: 1, en: "Antikythera Mechanism", el: "Μηχανισμός Αντικυθήρων", 
+                img: "https://upload.wikimedia.org/wikipedia/commons/6/66/NAMA_Machine_d%27Anticyth%C3%A8re_1.jpg",
+                desc_en: "An ancient computer (150 BC) used to track the stars and eclipses.",
+                desc_el: "Ένας αρχαίος υπολογιστής (150 π.Χ.) που χρησιμοποιούνταν για την παρακολούθηση των άστρων."
             },
             { 
-                id: 2, name: "Agamemnon'un Maskesi", 
-                img1: "https://upload.wikimedia.org/wikipedia/commons/c/c3/Gold_Mask_of_Agamemnon.jpg",
-                img2: "https://images.metmuseum.org/CRDImages/gr/original/DP20387.jpg",
-                desc: "Miken döneminden kalma som altından yapılmış bir cenaze maskesidir. M.Ö. 16. yüzyıla tarihlenir."
+                id: 2, en: "Mask of Agamemnon", el: "Μάσκα του Αγαμέμνονα", 
+                img: "https://upload.wikimedia.org/wikipedia/commons/c/c3/Gold_Mask_of_Agamemnon.jpg",
+                desc_en: "Solid gold funeral mask from Mycenae, dating to 1550 BC.",
+                desc_el: "Χρυσή νεκρική μάσκα από τις Μυκήνες, που χρονολογείται στο 1550 π.Χ."
             },
             { 
-                id: 3, name: "Artemision Zeus'u", 
-                img1: "https://upload.wikimedia.org/wikipedia/commons/c/c8/Artemision_Bronze_NAMA_15161_n3.jpg",
-                img2: "https://greekreporter.com/wp-content/uploads/2021/08/Zeus-Artemision-Statue.jpg",
-                desc: "Denizden çıkarılan bu devasa bronz heykel, ya Zeus'u ya da Poseidon'u temsil etmektedir."
+                id: 3, en: "Artemision Zeus", el: "Δίας του Αρτεμισίου", 
+                img: "https://upload.wikimedia.org/wikipedia/commons/c/c8/Artemision_Bronze_NAMA_15161_n3.jpg",
+                desc_en: "A massive bronze statue of Zeus or Poseidon, found in a shipwreck.",
+                desc_el: "Ένα τεράστιο χάλκινο άγαλμα του Δία ή του Ποσειδώνα, που βρέθηκε σε ναυάγιο."
             },
             { 
-                id: 4, name: "Artemision Jokeyi", 
-                img1: "https://upload.wikimedia.org/wikipedia/commons/d/d4/NAMA_Jockey_Artemision.jpg",
-                img2: "https://pallas.ceh.kit.edu/api/images/1155/original/",
-                desc: "Hellenistik döneme ait, bir yarış atı ve üzerindeki çocuk jokeyi betimleyen dinamik bir bronz heykeldir."
+                id: 4, en: "Artemision Jockey", el: "Ο αναβάτης του Αρτεμισίου", 
+                img: "https://upload.wikimedia.org/wikipedia/commons/d/d4/NAMA_Jockey_Artemision.jpg",
+                desc_en: "A young boy racing a galloping horse, a masterpiece of movement.",
+                desc_el: "Ένα νεαρό αγόρι που τρέχει με ένα καλπάζον άλογο, ένα αριστούργημα κίνησης."
             },
             { 
-                id: 5, name: "Mermer Kouros", 
-                img1: "https://upload.wikimedia.org/wikipedia/commons/3/3b/NAMA_Kouros_Aristodikos.jpg",
-                img2: "https://joyofmuseums.com/wp-content/uploads/Kouros-of-Anavyssos-National-Archaeological-Museum-Athens.jpg",
-                desc: "Arkaik dönem Yunan sanatının tipik bir örneği olan genç erkek heykelidir."
+                id: 5, en: "The Diadumenos", el: "Ο Διαδούμενος", 
+                img: "https://upload.wikimedia.org/wikipedia/commons/6/65/NAMA_Diadum%C3%A8ne.jpg",
+                desc_en: "Classical marble athlete tying a victory ribbon, by Polykleitos.",
+                desc_el: "Κλασικός μαρμάρινος αθλητής που δένει μια κορδέλα νίκης, του Πολύκλειτου."
             },
             { 
-                id: 6, name: "Naxos Sfenksi", 
-                img1: "https://upload.wikimedia.org/wikipedia/commons/8/82/NAMA_Sphinx_Naxiens.jpg",
-                img2: "https://i.pinimg.com/originals/81/73/45/81734567980345.jpg",
-                desc: "M.Ö. 560 yılında Apollon tapınağını korumak için inşa edilmiş devasa mermer yaratık heykelidir."
+                id: 6, en: "Sphinx of Naxos", el: "Σφίγγα των Ναξίων", 
+                img: "https://upload.wikimedia.org/wikipedia/commons/8/82/NAMA_Sphinx_Naxiens.jpg",
+                desc_en: "A colossal 6th-century BC sphinx that guarded Apollo's temple at Delphi.",
+                desc_el: "Μια κολοσσιαία σφίγγα του 6ου αιώνα π.Χ. που φύλαγε το ναό του Απόλλωνα."
             }
         ];
 
-        function renderGrid() {
+        let currentLang = 'en';
+        let foundArtifacts = new Set();
+
+        function setLang(l) {
+            currentLang = l;
+            document.querySelectorAll('.l-btn').forEach(b => b.classList.remove('active'));
+            document.getElementById(l + '-btn').classList.add('active');
+            document.getElementById('h-title').innerText = i18n[l].title;
+            document.getElementById('game-title').innerText = i18n[l].game;
+            document.getElementById('close-txt').innerText = i18n[l].close;
+            document.getElementById('home-txt').innerText = i18n[l].home;
+            renderAll();
+        }
+
+        function renderAll() {
             const grid = document.getElementById('main-grid');
             grid.innerHTML = artifacts.map(a => `
                 <div class="card" onclick="openScan(${a.id})">
-                    <div class="img-container">
-                        <img src="${a.img1}" onerror="this.src='${a.img2}'">
-                    </div>
-                    <p>${a.name}</p>
+                    <div class="img-box"><img src="${a.img}"></div>
+                    <p>${a[currentLang]}</p>
+                </div>
+            `).join('');
+
+            const shelf = document.getElementById('game-shelf');
+            shelf.innerHTML = artifacts.map(a => `
+                <div class="slot ${foundArtifacts.has(a.id) ? 'found' : ''}" id="slot-${a.id}">
+                    ${foundArtifacts.has(a.id) ? `<img src="${a.img}">` : '?'}
                 </div>
             `).join('');
         }
 
         function openScan(id) {
             const art = artifacts.find(x => x.id === id);
-            const scanner = document.getElementById('scanner');
-            const scanImg = document.getElementById('scan-img');
+            document.getElementById('scan-img').src = art.img;
+            document.getElementById('scanner').style.display = 'flex';
+            document.getElementById('info-title').innerText = art[currentLang];
+            document.getElementById('info-desc').innerText = currentLang === 'en' ? art.desc_en : art.desc_el;
             
-            // Tarama ekranındaki resmi güncelle
-            scanImg.src = art.img1;
-            scanImg.onerror = function() { this.src = art.img2; };
-            
-            scanner.style.display = 'flex';
-            document.getElementById('info-title').innerText = art.name;
-            document.getElementById('info-desc').innerText = art.desc;
+            // Oyuna ekle
+            foundArtifacts.add(id);
+            setTimeout(renderAll, 1000);
         }
 
         function closeScan() { document.getElementById('scanner').style.display = 'none'; }
 
-        renderGrid();
+        renderAll();
     </script>
 </body>
 </html>

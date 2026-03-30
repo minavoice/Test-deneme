@@ -3,115 +3,128 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Filoktitis - Antikythera Experience</title>
+    <title>Filoktitis - Malkafa Interactive</title>
     <style>
-        :root { --bg: #0A0414; --panel: #1F0B42; --gold: #FFD700; --text: #FFFFFF; --gray: #A594C1; }
-        body { margin: 0; background: var(--bg); color: var(--text); font-family: 'Segoe UI', sans-serif; overflow-x: hidden; }
+        :root { --bg: #0A0414; --gold: #FFD700; --paper: #f4e4bc; --text: #2c1e0a; }
+        body { margin: 0; background: var(--bg); color: #fff; font-family: 'Georgia', serif; overflow-x: hidden; }
         
-        /* DİL SEÇİCİ */
-        .lang-bar { position: fixed; top: 25px; right: 25px; z-index: 999; display: flex; gap: 12px; }
-        .lang-btn { background: rgba(255,215,0,0.1); border: 1px solid var(--gold); color: var(--gold); padding: 8px 16px; border-radius: 6px; cursor: pointer; font-size: 13px; font-weight: 800; transition: 0.4s; }
-        .lang-btn.active { background: var(--gold); color: var(--bg); box-shadow: 0 0 15px var(--gold); }
+        /* LANG SELECTOR */
+        .lang-panel { position: fixed; top: 20px; right: 20px; z-index: 1000; display: flex; gap: 10px; }
+        .lang-btn { background: rgba(255,215,0,0.2); border: 2px solid var(--gold); color: var(--gold); padding: 10px 15px; border-radius: 50%; cursor: pointer; font-weight: bold; transition: 0.3s; }
+        .lang-btn.active { background: var(--gold); color: var(--bg); }
 
-        /* GİRİŞ EKRANI */
-        #intro { height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; background: radial-gradient(circle, #25104A 0%, #0A0414 100%); transition: 0.5s; }
-        .ship-logo { width: 130px; height: 130px; border: 3px solid var(--gold); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 60px; box-shadow: 0 0 40px var(--gold); margin-bottom: 25px; animation: float 4s ease-in-out infinite; }
-        @keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-20px); } }
-        .main-btn { margin-top: 50px; padding: 18px 70px; background: var(--gold); color: var(--bg); border: none; border-radius: 40px; font-weight: 900; cursor: pointer; letter-spacing: 2px; text-transform: uppercase; }
+        /* STORY CONTAINER */
+        #app { height: 100vh; display: flex; align-items: center; justify-content: center; background: radial-gradient(circle, #25104A 0%, #0A0414 100%); }
+        .parchment { background: var(--paper); color: var(--text); padding: 30px; width: 85%; max-width: 500px; border-radius: 5px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); position: relative; min-height: 300px; display: flex; flex-direction: column; justify-content: center; border: 8px double #8b4513; }
 
-        /* HİKAYE AKIŞI */
-        #story { display: none; padding: 80px 20px 120px; max-width: 600px; margin: auto; }
-        .story-card { background: var(--panel); border-radius: 25px; padding: 30px; margin-bottom: 40px; border: 1px solid rgba(255,215,0,0.2); position: relative; animation: slideUp 0.8s ease; }
-        @keyframes slideUp { from { opacity: 0; transform: translateY(40px); } to { opacity: 1; transform: translateY(0); } }
-        .card-icon { font-size: 50px; display: block; text-align: center; margin-bottom: 15px; }
-        .card-title { color: var(--gold); font-size: 20px; margin-bottom: 15px; text-align: center; border-bottom: 1px solid rgba(255,215,0,0.1); padding-bottom: 10px; }
-        .card-desc { color: var(--gray); line-height: 1.7; font-size: 16px; }
+        /* BUTTONS & CHOICES */
+        .btn-play { background: #8b4513; color: white; border: none; padding: 15px 30px; border-radius: 50%; cursor: pointer; font-size: 24px; align-self: center; margin-top: 20px; box-shadow: 0 4px 10px rgba(0,0,0,0.3); }
+        .choice-btn { background: rgba(139, 69, 19, 0.1); border: 1px solid #8b4513; padding: 12px; margin: 8px 0; border-radius: 5px; cursor: pointer; text-align: left; transition: 0.3s; font-weight: bold; }
+        .choice-btn:hover { background: #8b4513; color: white; }
 
-        /* NAVİGASYON */
-        .nav-bar { position: fixed; bottom: 0; width: 100%; background: #16082A; padding: 20px 0; display: none; justify-content: center; border-top: 1px solid var(--gold); z-index: 100; }
+        .character-img { font-size: 80px; text-align: center; margin-bottom: 20px; }
+        .fade-in { animation: fadeIn 0.5s ease-in; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
     </style>
 </head>
 <body>
 
-    <div class="lang-bar">
-        <button class="lang-btn active" id="btn-en" onclick="setLang('en')">EN</button>
-        <button class="lang-btn" id="btn-el" onclick="setLang('el')">EL</button>
+    <div class="lang-panel">
+        <button class="lang-btn active" id="btn-en" onclick="changeLang('en')">EN</button>
+        <button class="lang-btn" id="btn-el" onclick="changeLang('el')">EL</button>
     </div>
 
-    <div id="intro">
-        <div class="ship-logo">🚢</div>
-        <h1 id="txt-title" style="color: var(--gold); letter-spacing: 5px; margin: 0;">FILOKTITIS</h1>
-        <p id="txt-subtitle" style="color: var(--gray); margin-top: 15px;">Discover the Ancient Secrets</p>
-        <button class="main-btn" id="txt-start" onclick="showStory()">ENTER</button>
-    </div>
-
-    <div id="story">
-        <div id="steps-container"></div>
-    </div>
-
-    <div class="nav-bar" id="nav">
-        <button class="main-btn" id="txt-home" style="margin-top: 0; padding: 12px 50px;" onclick="location.reload()">HOME</button>
+    <div id="app">
+        <div class="parchment fade-in" id="screen">
+            </div>
     </div>
 
     <script>
-        const content = {
+        const storyData = {
             en: {
-                title: "FILOKTITIS", subtitle: "Discover the Ancient Secrets", start: "START JOURNEY", home: "HOME",
-                steps: [
-                    { t: "The Journey Begins", i: "🌊", d: "Philoctetes and his brave crew set sail from the port of Pergamon, carrying a treasure beyond imagination." },
-                    { t: "The Masterpiece", i: "⚙️", d: "In the ship's hold lay the Antikythera Mechanism, a device so complex it could calculate the stars." },
-                    { t: "The Abyss", i: "⛈️", d: "A violent storm struck near the coast. The ship broke apart, and the mechanism sank into the dark silence of the sea." },
-                    { t: "The Awakening", i: "🔍", d: "2000 years later, sponge divers brought the corroded bronze back to light, revealing an ancient digital world." }
-                ]
+                intro: { char: "👴", text: "Hey children... listen to an old story from the Great War in Troy...", btn: "▶️" },
+                q1: { 
+                    text: "What oracle do you believe I gave them?",
+                    choices: [
+                        { t: "You have to sacrifice to a Goddess", correct: false },
+                        { t: "Arrows are useless; victory will come with peace", correct: true }
+                    ],
+                    wrong: "Try again!", right: "Absolutely right! 👍"
+                },
+                q2: {
+                    text: "What did Odysseus say to the crew?",
+                    choices: [
+                        { t: "To take him to a good doctor in Troy", correct: false },
+                        { t: "To leave Philoctetes behind on Lemnos", correct: true }
+                    ],
+                    wrong: "Try again!", right: "Correct! Onward!"
+                }
             },
             el: {
-                title: "ΦΙΛΟΚΤΗΤΗΣ", subtitle: "Ανακαλύψτε τα Αρχαία Μυστικά", start: "ΕΙΣΟΔΟΣ", home: "ΑΡΧΙΚΗ",
-                steps: [
-                    { t: "Το Ταξίδι Ξεκινά", i: "🌊", d: "Ο Φιλοκτήτης και το γενναίο πλήρωμά του σάλπαραν από το λιμάνι της Περγάμου, μεταφέροντας έναν αμύθητο θησαυρό." },
-                    { t: "Το Αριστούργημα", i: "⚙️", d: "Στο κύτος του πλοίου βρισκόταν ο Μηχανισμός των Αντικυθήρων, μια συσκευή που υπολόγιζε τα άστρα." },
-                    { t: "Η Άβυσσος", i: "⛈️", d: "Μια βίαιη καταιγίδα ξέσπασε κοντά στην ακτή. Το πλοίο διαλύθηκε και ο μηχανισμός βυθίστηκε στη σιωπή της θάλασσας." },
-                    { t: "Η Αφύπνιση", i: "🔍", d: "2000 χρόνια αργότερα, σφουγγαράδες έφεραν το διαβρωμένο μπρούντζο ξανά στο φως, αποκαλύπτοντας έναν αρχαίο κόσμο." }
-                ]
+                intro: { char: "👴", text: "Γεια σας παιδιά... ακούστε μια παλιά ιστορία από τον Μεγάλο Πόλεμο στην Τροία...", btn: "▶️" },
+                q1: { 
+                    text: "Ποιο χρησμό πιστεύετε ότι τους έδωσα;",
+                    choices: [
+                        { t: "Πρέπει να θυσιάσετε σε μια Θεά", correct: false },
+                        { t: "Τα βέλη είναι άχρηστα, η νίκη θα έρθει με ειρήνη", correct: true }
+                    ],
+                    wrong: "Προσπάθησε ξανά!", right: "Απολύτως σωστό! 👍"
+                },
+                q2: {
+                    text: "Τι είπε ο Οδυσσέας στο πλήρωμα;",
+                    choices: [
+                        { t: "Να τον πάνε σε έναν καλό γιατρό στην Τροία", correct: false },
+                        { t: "Να αφήσουν τον Φιλοκτήτη πίσω στη Λήμνο", correct: true }
+                    ],
+                    wrong: "Προσπάθησε ξανά!", right: "Σωστά! Συνέχισε!"
+                }
             }
         };
 
-        let lang = 'en';
+        let currentLang = 'en';
+        let step = 'intro';
 
-        function setLang(l) {
-            lang = l;
+        function changeLang(l) {
+            currentLang = l;
             document.getElementById('btn-en').classList.toggle('active', l === 'en');
             document.getElementById('btn-el').classList.toggle('active', l === 'el');
-            updateUI();
+            render();
         }
 
-        function updateUI() {
-            const d = content[lang];
-            document.getElementById('txt-title').innerText = d.title;
-            document.getElementById('txt-subtitle').innerText = d.subtitle;
-            document.getElementById('txt-start').innerText = d.start;
-            document.getElementById('txt-home').innerText = d.home;
-            
-            const cont = document.getElementById('steps-container');
-            cont.innerHTML = '';
-            d.steps.forEach(s => {
-                cont.innerHTML += `
-                    <div class="story-card">
-                        <span class="card-icon">${s.i}</span>
-                        <h3 class="card-title">${s.t}</h3>
-                        <p class="card-desc">${s.d}</p>
-                    </div>
+        function render() {
+            const screen = document.getElementById('screen');
+            const data = storyData[currentLang];
+            screen.classList.remove('fade-in');
+            void screen.offsetWidth; // Trigger reflow
+            screen.classList.add('fade-in');
+
+            if (step === 'intro') {
+                screen.innerHTML = `
+                    <div class="character-img">${data.intro.char}</div>
+                    <p style="text-align:center; font-style:italic;">${data.intro.text}</p>
+                    <button class="btn-play" onclick="goTo('q1')">${data.intro.btn}</button>
                 `;
-            });
+            } else if (step === 'q1' || step === 'q2') {
+                const q = data[step];
+                screen.innerHTML = `<h3>${q.text}</h3>` + 
+                    q.choices.map((c, i) => `<button class="choice-btn" onclick="check(${c.correct}, '${step}')">${c.t}</button>`).join('');
+            }
         }
 
-        function showStory() {
-            document.getElementById('intro').style.display = 'none';
-            document.getElementById('story').style.display = 'block';
-            document.getElementById('nav').style.display = 'flex';
-            window.scrollTo(0,0);
+        function check(isCorrect, currentStep) {
+            const data = storyData[currentLang][currentStep];
+            if (isCorrect) {
+                alert(data.right);
+                if (currentStep === 'q1') goTo('q2');
+                else { alert("The End / Τέλος"); location.reload(); }
+            } else {
+                alert(data.wrong);
+            }
         }
 
-        updateUI();
+        function goTo(s) { step = s; render(); }
+
+        render();
     </script>
 </body>
 </html>

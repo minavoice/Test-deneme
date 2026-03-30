@@ -3,172 +3,114 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Filoktitis - Official Interactive Story</title>
+    <title>National Archaeological Museum - Dual App</title>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@700&family=Spectral:italic,wght@400;700&display=swap');
+        /* TEMEL SIFIRLAMA */
+        body, html { margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; height: 100%; overflow: hidden; }
         
-        :root { --gold: #d4af37; --bg: #05020a; }
-        body { margin: 0; background: var(--bg); color: #fff; font-family: 'Spectral', serif; height: 100vh; overflow: hidden; }
-
-        /* LANG BAR */
-        .lang-fixed { position: fixed; top: 20px; right: 20px; z-index: 1000; }
-        .l-btn { background: rgba(0,0,0,0.8); border: 1px solid var(--gold); color: var(--gold); padding: 8px 15px; cursor: pointer; font-family: 'Cinzel', serif; margin-left: 10px; transition: 0.3s; }
-        .l-btn.active { background: var(--gold); color: #000; }
-
-        /* THE PARCHMENT CONTAINER */
-        .wrapper { width: 100vw; height: 100vh; display: flex; align-items: center; justify-content: center; background: url('https://antikythera.web-2.gr/assets/bg-dark.jpg') center/cover; }
+        /* GİRİŞ EKRANI (DİL VE MOD SEÇİMİ) */
+        #mode-selector { height: 100vh; display: flex; flex-direction: column; background: #000; }
+        .mode-option { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; cursor: pointer; transition: 0.5s; text-align: center; border: 1px solid rgba(255,255,255,0.1); }
         
-        .parchment { 
-            width: 90%; max-width: 950px; height: 550px; 
-            background: #f4e4bc url('https://www.transparenttextures.com/patterns/paper-fibers.png');
-            border: 20px solid transparent;
-            border-image: url('https://antikythera.web-2.gr/assets/border-gold.png') 30 round;
-            display: flex; position: relative; box-shadow: 0 0 50px #000;
-        }
+        /* 1. STİL: STRICT & MODERN (YETİŞKİN) */
+        .expert-btn { background: #ffffff; color: #1a1a1a; }
+        .expert-btn:hover { background: #f0f0f0; transform: scale(1.02); }
 
-        /* CHARACTER IMAGE */
-        .char-box { width: 45%; height: 100%; position: relative; overflow: hidden; border-right: 2px solid rgba(139,69,19,0.2); }
-        .char-img { width: 100%; height: 100%; object-fit: cover; transition: 0.8s ease; }
+        /* 2. STİL: ANIMATED & FUN (ÇOCUK) */
+        .kids-btn { background: #FFD54F; color: #5D4037; position: relative; overflow: hidden; }
+        .kids-btn:hover { background: #FFCA28; transform: scale(1.02); }
+        .kids-btn::after { content: '🏺'; position: absolute; font-size: 80px; opacity: 0.2; right: -20px; bottom: -20px; }
 
-        /* TEXT CONTENT */
-        .text-box { width: 55%; padding: 40px; color: #2c1e0a; display: flex; flex-direction: column; justify-content: space-between; }
-        .dialogue { font-size: 22px; font-style: italic; line-height: 1.5; font-weight: 500; }
+        /* --- PART 1: MUSEUM GUIDE VIEW --- */
+        #museum-guide { display: none; height: 100vh; background: #F4F4F4; }
+        .guide-header { background: #fff; padding: 20px; border-bottom: 2px solid #000; font-weight: bold; letter-spacing: 2px; text-transform: uppercase; }
+        .scanner-box { height: 35vh; background: #000; margin: 20px; position: relative; border-radius: 4px; overflow: hidden; }
+        .scan-bar { width: 100%; height: 2px; background: #00ff00; position: absolute; animation: scanMove 2.5s infinite linear; box-shadow: 0 0 15px #00ff00; }
+        @keyframes scanMove { 0% { top: 0; } 100% { top: 100%; } }
+        .info-panel { padding: 25px; background: #fff; margin: 0 20px; border-radius: 4px; border-top: 5px solid #000; }
+
+        /* --- PART 2: KIDS GAME VIEW --- */
+        #kids-game { display: none; height: 100vh; background: #E1F5FE; }
+        .game-header { background: #03A9F4; color: #fff; padding: 15px; text-align: center; font-size: 24px; font-weight: 900; border-bottom: 5px solid #0288D1; }
+        .quiz-card { background: #fff; margin: 20px; padding: 25px; border-radius: 30px; border: 4px solid #03A9F4; box-shadow: 0 10px 0 #B3E5FC; text-align: center; }
+        .collect-item { width: 80px; height: 80px; background: #fff; border-radius: 20px; display: inline-flex; align-items: center; justify-content: center; font-size: 40px; margin: 10px; border: 3px dashed #03A9F4; opacity: 0.3; transition: 0.5s; }
+        .collect-item.found { opacity: 1; border-style: solid; background: #FFF176; transform: rotate(10deg); }
         
-        /* CONTROLS (Videonun alt paneli) */
-        .nav-ui { display: flex; justify-content: space-between; align-items: center; border-top: 1px solid rgba(0,0,0,0.1); padding-top: 20px; }
-        .arrow-btn { background: none; border: none; font-size: 45px; color: #8b4513; cursor: pointer; transition: 0.3s; }
-        .arrow-btn:hover { color: var(--gold); transform: scale(1.1); }
-        .arrow-btn:disabled { opacity: 0.2; cursor: not-allowed; }
+        .action-btn { display: block; width: 100%; padding: 15px; margin-top: 15px; border-radius: 50px; border: none; font-weight: bold; cursor: pointer; font-size: 16px; }
+        .btn-expert { background: #000; color: #fff; }
+        .btn-kids { background: #FF7043; color: #fff; box-shadow: 0 5px 0 #D84315; }
 
-        /* QUIZ OVERLAY */
-        #quiz-layer { 
-            position: absolute; top:0; left:0; width:100%; height:100%; 
-            background: rgba(10,4,20,0.96); display: none; flex-direction: column; 
-            align-items: center; justify-content: center; z-index: 50; text-align: center; padding: 40px;
-        }
-        .q-opt { width: 100%; max-width: 400px; padding: 15px; margin: 10px 0; border: 1px solid var(--gold); color: var(--gold); background: none; font-family: 'Cinzel', serif; cursor: pointer; transition: 0.3s; }
-        .q-opt:hover { background: var(--gold); color: #000; }
+        .back-nav { position: fixed; bottom: 20px; width: 100%; text-align: center; }
+        .exit-btn { background: rgba(0,0,0,0.6); color: #fff; padding: 8px 20px; border-radius: 20px; border: none; cursor: pointer; font-size: 12px; }
     </style>
 </head>
 <body>
 
-    <div class="lang-fixed">
-        <button class="l-btn active" onclick="setLang('en', this)">EN</button>
-        <button class="l-btn" onclick="setLang('el', this)">EL</button>
+    <div id="mode-selector">
+        <div class="mode-option expert-btn" onclick="openMode('guide')">
+            <h1 style="font-size: 14px; letter-spacing: 4px;">NATIONAL MUSEUM</h1>
+            <h2 style="margin: 5px 0; font-weight: 900;">PROFESSIONAL GUIDE</h2>
+            <p style="font-size: 12px; opacity: 0.6;">SCAN & RESEARCH FINDINGS</p>
+        </div>
+        <div class="mode-option kids-btn" onclick="openMode('game')">
+            <h1 style="font-size: 28px; margin: 0;">I'M THE ARCHAEOLOGIST!</h1>
+            <p style="font-weight: bold;">PLAY & COLLECT TREASURES 🌟</p>
+        </div>
     </div>
 
-    <div class="wrapper">
-        <div class="parchment">
-            <div class="char-box">
-                <img id="main-char" class="char-img" src="" alt="Character">
-            </div>
+    <div id="museum-guide">
+        <div class="guide-header">EXHIBIT SCANNER v1.0</div>
+        <div class="scanner-box">
+            <div class="scan-bar"></div>
+            <div style="color: #444; position: absolute; top: 45%; width: 100%; text-align: center; font-size: 12px;">ALIGN ARTIFACT WITHIN FRAME</div>
+        </div>
+        <div class="info-panel">
+            <h3 style="margin-top: 0; text-transform: uppercase;">The Zeus of Artemision</h3>
+            <p style="font-size: 14px; color: #555; line-height: 1.6;">A great bronze statue recovered from the sea off Cape Artemision. It represents either Zeus or Poseidon, dated circa 460 BC.</p>
+            <button class="action-btn btn-expert">🔊 HEAR AUDIO DESCRIPTION</button>
+            <button class="action-btn btn-expert" style="background: none; border: 1px solid #000; color: #000; margin-top: 10px;">📄 READ FULL ANALYSIS</button>
+        </div>
+    </div>
 
-            <div class="text-box">
-                <div id="text-output" class="dialogue"></div>
-                
-                <div class="nav-ui">
-                    <button class="arrow-btn" id="p-btn" onclick="go(-1)">⇠</button>
-                    <div id="dots" style="color: #8b4513; font-weight: bold; font-family: 'Cinzel';">I / III</div>
-                    <button class="arrow-btn" id="n-btn" onclick="go(1)">⇢</button>
-                </div>
-            </div>
-
-            <div id="quiz-layer">
-                <h2 id="q-text" style="color: var(--gold); font-family: 'Cinzel'; margin-bottom: 30px;"></h2>
-                <div id="q-options"></div>
+    <div id="kids-game">
+        <div class="game-header">MY ADVENTURE 🎒</div>
+        <div class="quiz-card">
+            <h3 style="margin-top: 0; color: #03A9F4;">MISSION 1: THE LOST MASK</h3>
+            <p>We found a golden mask! Do you know who it belonged to?</p>
+            <button class="action-btn btn-kids" onclick="winItem(0)">A) King Agamemnon</button>
+            <button class="action-btn btn-kids" style="background: #4FC3F7; box-shadow: 0 5px 0 #039BE5;">B) Hercules</button>
+        </div>
+        
+        <div style="text-align: center; margin-top: 30px;">
+            <p style="font-weight: bold; color: #0288D1;">MY MUSEUM COLLECTION</p>
+            <div id="collection-grid">
+                <div class="collect-item">🎭</div>
+                <div class="collect-item">🏺</div>
+                <div class="collect-item">⚔️</div>
             </div>
         </div>
     </div>
 
+    <div class="back-nav">
+        <button class="exit-btn" id="exit-btn" style="display:none;" onclick="location.reload()">Return to Menu</button>
+    </div>
+
     <script>
-        const db = {
-            en: [
-                { 
-                    txt: "Greetings, young ones. I am Philoctetes. Do you wish to hear how we found the Mechanism in the dark abyss?", 
-                    img: "https://antikythera.web-2.gr/assets/characters/philoctetes_main.png", // Sitedeki orijinal karakter
-                    quiz: false 
-                },
-                { 
-                    txt: "The Oracle spoke of victory, but only through the ancient bow. What was the price of our curiosity?", 
-                    img: "https://antikythera.web-2.gr/assets/characters/children_listening.png", // Çocuklar
-                    quiz: true,
-                    q: "Which hero's weapon was needed for Troy's fall?",
-                    opts: [{t: "The Bow of Heracles", c:true}, {t: "The Shield of Achilles", c:false}]
-                },
-                { 
-                    txt: "The storm was merciless. But from that wreck, we saved the history of the stars.", 
-                    img: "https://antikythera.web-2.gr/assets/backgrounds/shipwreck_scene.jpg", // Batık sahnesi
-                    quiz: false 
-                }
-            ],
-            el: [
-                { 
-                    txt: "Γεια σας, μικροί μου. Είμαι ο Φιλοκτήτης. Θέλετε να μάθετε πώς βρήκαμε τον Μηχανισμό στην σκοτεινή άβυσσο;", 
-                    img: "https://antikythera.web-2.gr/assets/characters/philoctetes_main.png",
-                    quiz: false 
-                },
-                { 
-                    txt: "Ο Χρησμός μίλησε για νίκη, αλλά μόνο μέσα από το αρχαίο τόξο. Ποιο ήταν το τίμημα της περιέργειάς μας;", 
-                    img: "https://antikythera.web-2.gr/assets/characters/children_listening.png",
-                    quiz: true,
-                    q: "Ποιο όπλο ήρωα χρειαζόταν για την πτώση της Τροίας;",
-                    opts: [{t: "Το Τόξο του Ηρακλή", c:true}, {t: "Η Ασπίδα του Αχιλλέα", c:false}]
-                },
-                { 
-                    txt: "Η καταιγίδα ήταν ανελέητη. Αλλά από εκείνο το ναυάγιο, σώσαμε την ιστορία των άστρων.", 
-                    img: "https://antikythera.web-2.gr/assets/backgrounds/shipwreck_scene.jpg",
-                    quiz: false 
-                }
-            ]
-        };
-
-        let curLang = 'en';
-        let curIdx = 0;
-
-        function setLang(l, b) {
-            curLang = l;
-            document.querySelectorAll('.l-btn').forEach(btn => btn.classList.remove('active'));
-            b.classList.add('active');
-            sync();
-        }
-
-        function sync() {
-            const step = db[curLang][curIdx];
-            document.getElementById('main-char').src = step.img;
-            document.getElementById('text-output').innerText = `"${step.txt}"`;
-            document.getElementById('dots').innerText = `${curIdx + 1} / ${db[curLang].length}`;
-            
-            document.getElementById('p-btn').disabled = curIdx === 0;
-            document.getElementById('n-btn').disabled = curIdx === db[curLang].length - 1;
-
-            if(step.quiz) {
-                setTimeout(() => {
-                    document.getElementById('quiz-layer').style.display = 'flex';
-                    document.getElementById('q-text').innerText = step.q;
-                    document.getElementById('q-options').innerHTML = step.opts.map(o => 
-                        `<button class="q-opt" onclick="verify(${o.c})">${o.t}</button>`
-                    ).join('');
-                }, 1500);
+        function openMode(mode) {
+            document.getElementById('mode-selector').style.display = 'none';
+            document.getElementById('exit-btn').style.display = 'inline-block';
+            if(mode === 'guide') {
+                document.getElementById('museum-guide').style.display = 'block';
             } else {
-                document.getElementById('quiz-layer').style.display = 'none';
+                document.getElementById('kids-game').style.display = 'block';
             }
         }
 
-        function verify(c) {
-            if(c) {
-                document.getElementById('quiz-layer').style.display = 'none';
-                if(curIdx < db[curLang].length - 1) go(1);
-            } else {
-                alert(curLang === 'en' ? "The Oracle is silent. Wrong!" : "Ο Χρησμός σιωπά. Λάθος!");
-            }
+        function winItem(index) {
+            const items = document.querySelectorAll('.collect-item');
+            items[index].classList.add('found');
+            alert("🌟 AMAZING! You found a treasure for your collection! 🌟");
         }
-
-        function go(d) {
-            curIdx += d;
-            sync();
-        }
-
-        sync();
     </script>
 </body>
 </html>

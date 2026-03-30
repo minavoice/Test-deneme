@@ -3,128 +3,172 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Filoktitis - Malkafa Interactive</title>
+    <title>Filoktitis - Official Interactive Story</title>
     <style>
-        :root { --bg: #0A0414; --gold: #FFD700; --paper: #f4e4bc; --text: #2c1e0a; }
-        body { margin: 0; background: var(--bg); color: #fff; font-family: 'Georgia', serif; overflow-x: hidden; }
+        @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@700&family=Spectral:italic,wght@400;700&display=swap');
         
-        /* LANG SELECTOR */
-        .lang-panel { position: fixed; top: 20px; right: 20px; z-index: 1000; display: flex; gap: 10px; }
-        .lang-btn { background: rgba(255,215,0,0.2); border: 2px solid var(--gold); color: var(--gold); padding: 10px 15px; border-radius: 50%; cursor: pointer; font-weight: bold; transition: 0.3s; }
-        .lang-btn.active { background: var(--gold); color: var(--bg); }
+        :root { --gold: #d4af37; --bg: #05020a; }
+        body { margin: 0; background: var(--bg); color: #fff; font-family: 'Spectral', serif; height: 100vh; overflow: hidden; }
 
-        /* STORY CONTAINER */
-        #app { height: 100vh; display: flex; align-items: center; justify-content: center; background: radial-gradient(circle, #25104A 0%, #0A0414 100%); }
-        .parchment { background: var(--paper); color: var(--text); padding: 30px; width: 85%; max-width: 500px; border-radius: 5px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); position: relative; min-height: 300px; display: flex; flex-direction: column; justify-content: center; border: 8px double #8b4513; }
+        /* LANG BAR */
+        .lang-fixed { position: fixed; top: 20px; right: 20px; z-index: 1000; }
+        .l-btn { background: rgba(0,0,0,0.8); border: 1px solid var(--gold); color: var(--gold); padding: 8px 15px; cursor: pointer; font-family: 'Cinzel', serif; margin-left: 10px; transition: 0.3s; }
+        .l-btn.active { background: var(--gold); color: #000; }
 
-        /* BUTTONS & CHOICES */
-        .btn-play { background: #8b4513; color: white; border: none; padding: 15px 30px; border-radius: 50%; cursor: pointer; font-size: 24px; align-self: center; margin-top: 20px; box-shadow: 0 4px 10px rgba(0,0,0,0.3); }
-        .choice-btn { background: rgba(139, 69, 19, 0.1); border: 1px solid #8b4513; padding: 12px; margin: 8px 0; border-radius: 5px; cursor: pointer; text-align: left; transition: 0.3s; font-weight: bold; }
-        .choice-btn:hover { background: #8b4513; color: white; }
+        /* THE PARCHMENT CONTAINER */
+        .wrapper { width: 100vw; height: 100vh; display: flex; align-items: center; justify-content: center; background: url('https://antikythera.web-2.gr/assets/bg-dark.jpg') center/cover; }
+        
+        .parchment { 
+            width: 90%; max-width: 950px; height: 550px; 
+            background: #f4e4bc url('https://www.transparenttextures.com/patterns/paper-fibers.png');
+            border: 20px solid transparent;
+            border-image: url('https://antikythera.web-2.gr/assets/border-gold.png') 30 round;
+            display: flex; position: relative; box-shadow: 0 0 50px #000;
+        }
 
-        .character-img { font-size: 80px; text-align: center; margin-bottom: 20px; }
-        .fade-in { animation: fadeIn 0.5s ease-in; }
-        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        /* CHARACTER IMAGE */
+        .char-box { width: 45%; height: 100%; position: relative; overflow: hidden; border-right: 2px solid rgba(139,69,19,0.2); }
+        .char-img { width: 100%; height: 100%; object-fit: cover; transition: 0.8s ease; }
+
+        /* TEXT CONTENT */
+        .text-box { width: 55%; padding: 40px; color: #2c1e0a; display: flex; flex-direction: column; justify-content: space-between; }
+        .dialogue { font-size: 22px; font-style: italic; line-height: 1.5; font-weight: 500; }
+        
+        /* CONTROLS (Videonun alt paneli) */
+        .nav-ui { display: flex; justify-content: space-between; align-items: center; border-top: 1px solid rgba(0,0,0,0.1); padding-top: 20px; }
+        .arrow-btn { background: none; border: none; font-size: 45px; color: #8b4513; cursor: pointer; transition: 0.3s; }
+        .arrow-btn:hover { color: var(--gold); transform: scale(1.1); }
+        .arrow-btn:disabled { opacity: 0.2; cursor: not-allowed; }
+
+        /* QUIZ OVERLAY */
+        #quiz-layer { 
+            position: absolute; top:0; left:0; width:100%; height:100%; 
+            background: rgba(10,4,20,0.96); display: none; flex-direction: column; 
+            align-items: center; justify-content: center; z-index: 50; text-align: center; padding: 40px;
+        }
+        .q-opt { width: 100%; max-width: 400px; padding: 15px; margin: 10px 0; border: 1px solid var(--gold); color: var(--gold); background: none; font-family: 'Cinzel', serif; cursor: pointer; transition: 0.3s; }
+        .q-opt:hover { background: var(--gold); color: #000; }
     </style>
 </head>
 <body>
 
-    <div class="lang-panel">
-        <button class="lang-btn active" id="btn-en" onclick="changeLang('en')">EN</button>
-        <button class="lang-btn" id="btn-el" onclick="changeLang('el')">EL</button>
+    <div class="lang-fixed">
+        <button class="l-btn active" onclick="setLang('en', this)">EN</button>
+        <button class="l-btn" onclick="setLang('el', this)">EL</button>
     </div>
 
-    <div id="app">
-        <div class="parchment fade-in" id="screen">
+    <div class="wrapper">
+        <div class="parchment">
+            <div class="char-box">
+                <img id="main-char" class="char-img" src="" alt="Character">
             </div>
+
+            <div class="text-box">
+                <div id="text-output" class="dialogue"></div>
+                
+                <div class="nav-ui">
+                    <button class="arrow-btn" id="p-btn" onclick="go(-1)">⇠</button>
+                    <div id="dots" style="color: #8b4513; font-weight: bold; font-family: 'Cinzel';">I / III</div>
+                    <button class="arrow-btn" id="n-btn" onclick="go(1)">⇢</button>
+                </div>
+            </div>
+
+            <div id="quiz-layer">
+                <h2 id="q-text" style="color: var(--gold); font-family: 'Cinzel'; margin-bottom: 30px;"></h2>
+                <div id="q-options"></div>
+            </div>
+        </div>
     </div>
 
     <script>
-        const storyData = {
-            en: {
-                intro: { char: "👴", text: "Hey children... listen to an old story from the Great War in Troy...", btn: "▶️" },
-                q1: { 
-                    text: "What oracle do you believe I gave them?",
-                    choices: [
-                        { t: "You have to sacrifice to a Goddess", correct: false },
-                        { t: "Arrows are useless; victory will come with peace", correct: true }
-                    ],
-                    wrong: "Try again!", right: "Absolutely right! 👍"
+        const db = {
+            en: [
+                { 
+                    txt: "Greetings, young ones. I am Philoctetes. Do you wish to hear how we found the Mechanism in the dark abyss?", 
+                    img: "https://antikythera.web-2.gr/assets/characters/philoctetes_main.png", // Sitedeki orijinal karakter
+                    quiz: false 
                 },
-                q2: {
-                    text: "What did Odysseus say to the crew?",
-                    choices: [
-                        { t: "To take him to a good doctor in Troy", correct: false },
-                        { t: "To leave Philoctetes behind on Lemnos", correct: true }
-                    ],
-                    wrong: "Try again!", right: "Correct! Onward!"
-                }
-            },
-            el: {
-                intro: { char: "👴", text: "Γεια σας παιδιά... ακούστε μια παλιά ιστορία από τον Μεγάλο Πόλεμο στην Τροία...", btn: "▶️" },
-                q1: { 
-                    text: "Ποιο χρησμό πιστεύετε ότι τους έδωσα;",
-                    choices: [
-                        { t: "Πρέπει να θυσιάσετε σε μια Θεά", correct: false },
-                        { t: "Τα βέλη είναι άχρηστα, η νίκη θα έρθει με ειρήνη", correct: true }
-                    ],
-                    wrong: "Προσπάθησε ξανά!", right: "Απολύτως σωστό! 👍"
+                { 
+                    txt: "The Oracle spoke of victory, but only through the ancient bow. What was the price of our curiosity?", 
+                    img: "https://antikythera.web-2.gr/assets/characters/children_listening.png", // Çocuklar
+                    quiz: true,
+                    q: "Which hero's weapon was needed for Troy's fall?",
+                    opts: [{t: "The Bow of Heracles", c:true}, {t: "The Shield of Achilles", c:false}]
                 },
-                q2: {
-                    text: "Τι είπε ο Οδυσσέας στο πλήρωμα;",
-                    choices: [
-                        { t: "Να τον πάνε σε έναν καλό γιατρό στην Τροία", correct: false },
-                        { t: "Να αφήσουν τον Φιλοκτήτη πίσω στη Λήμνο", correct: true }
-                    ],
-                    wrong: "Προσπάθησε ξανά!", right: "Σωστά! Συνέχισε!"
+                { 
+                    txt: "The storm was merciless. But from that wreck, we saved the history of the stars.", 
+                    img: "https://antikythera.web-2.gr/assets/backgrounds/shipwreck_scene.jpg", // Batık sahnesi
+                    quiz: false 
                 }
-            }
+            ],
+            el: [
+                { 
+                    txt: "Γεια σας, μικροί μου. Είμαι ο Φιλοκτήτης. Θέλετε να μάθετε πώς βρήκαμε τον Μηχανισμό στην σκοτεινή άβυσσο;", 
+                    img: "https://antikythera.web-2.gr/assets/characters/philoctetes_main.png",
+                    quiz: false 
+                },
+                { 
+                    txt: "Ο Χρησμός μίλησε για νίκη, αλλά μόνο μέσα από το αρχαίο τόξο. Ποιο ήταν το τίμημα της περιέργειάς μας;", 
+                    img: "https://antikythera.web-2.gr/assets/characters/children_listening.png",
+                    quiz: true,
+                    q: "Ποιο όπλο ήρωα χρειαζόταν για την πτώση της Τροίας;",
+                    opts: [{t: "Το Τόξο του Ηρακλή", c:true}, {t: "Η Ασπίδα του Αχιλλέα", c:false}]
+                },
+                { 
+                    txt: "Η καταιγίδα ήταν ανελέητη. Αλλά από εκείνο το ναυάγιο, σώσαμε την ιστορία των άστρων.", 
+                    img: "https://antikythera.web-2.gr/assets/backgrounds/shipwreck_scene.jpg",
+                    quiz: false 
+                }
+            ]
         };
 
-        let currentLang = 'en';
-        let step = 'intro';
+        let curLang = 'en';
+        let curIdx = 0;
 
-        function changeLang(l) {
-            currentLang = l;
-            document.getElementById('btn-en').classList.toggle('active', l === 'en');
-            document.getElementById('btn-el').classList.toggle('active', l === 'el');
-            render();
+        function setLang(l, b) {
+            curLang = l;
+            document.querySelectorAll('.l-btn').forEach(btn => btn.classList.remove('active'));
+            b.classList.add('active');
+            sync();
         }
 
-        function render() {
-            const screen = document.getElementById('screen');
-            const data = storyData[currentLang];
-            screen.classList.remove('fade-in');
-            void screen.offsetWidth; // Trigger reflow
-            screen.classList.add('fade-in');
+        function sync() {
+            const step = db[curLang][curIdx];
+            document.getElementById('main-char').src = step.img;
+            document.getElementById('text-output').innerText = `"${step.txt}"`;
+            document.getElementById('dots').innerText = `${curIdx + 1} / ${db[curLang].length}`;
+            
+            document.getElementById('p-btn').disabled = curIdx === 0;
+            document.getElementById('n-btn').disabled = curIdx === db[curLang].length - 1;
 
-            if (step === 'intro') {
-                screen.innerHTML = `
-                    <div class="character-img">${data.intro.char}</div>
-                    <p style="text-align:center; font-style:italic;">${data.intro.text}</p>
-                    <button class="btn-play" onclick="goTo('q1')">${data.intro.btn}</button>
-                `;
-            } else if (step === 'q1' || step === 'q2') {
-                const q = data[step];
-                screen.innerHTML = `<h3>${q.text}</h3>` + 
-                    q.choices.map((c, i) => `<button class="choice-btn" onclick="check(${c.correct}, '${step}')">${c.t}</button>`).join('');
-            }
-        }
-
-        function check(isCorrect, currentStep) {
-            const data = storyData[currentLang][currentStep];
-            if (isCorrect) {
-                alert(data.right);
-                if (currentStep === 'q1') goTo('q2');
-                else { alert("The End / Τέλος"); location.reload(); }
+            if(step.quiz) {
+                setTimeout(() => {
+                    document.getElementById('quiz-layer').style.display = 'flex';
+                    document.getElementById('q-text').innerText = step.q;
+                    document.getElementById('q-options').innerHTML = step.opts.map(o => 
+                        `<button class="q-opt" onclick="verify(${o.c})">${o.t}</button>`
+                    ).join('');
+                }, 1500);
             } else {
-                alert(data.wrong);
+                document.getElementById('quiz-layer').style.display = 'none';
             }
         }
 
-        function goTo(s) { step = s; render(); }
+        function verify(c) {
+            if(c) {
+                document.getElementById('quiz-layer').style.display = 'none';
+                if(curIdx < db[curLang].length - 1) go(1);
+            } else {
+                alert(curLang === 'en' ? "The Oracle is silent. Wrong!" : "Ο Χρησμός σιωπά. Λάθος!");
+            }
+        }
 
-        render();
+        function go(d) {
+            curIdx += d;
+            sync();
+        }
+
+        sync();
     </script>
 </body>
 </html>
